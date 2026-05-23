@@ -10,8 +10,8 @@ export function validateFullName(name) {
 // Validate Gmail only
 export function validateEmail(email) {
   if (!email.trim()) return "Email is required";
-  if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email.trim())) {
-    return "Only Gmail addresses are allowed (must end with @gmail.com)";
+  if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim())) {
+    return "Please enter a valid email address";
   }
   return "";
 }

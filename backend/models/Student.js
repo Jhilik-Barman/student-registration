@@ -23,7 +23,7 @@ const studentSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
       // Only @gmail.com emails allowed
-      match: [/^[a-zA-Z0-9._%+-]+@gmail\.com$/, "Only Gmail addresses (@gmail.com) are allowed"],
+      match: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Please enter a valid email address"],
     },
     phone: {
       type: String,

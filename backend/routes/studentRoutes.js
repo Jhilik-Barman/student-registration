@@ -15,7 +15,7 @@ const studentValidation = [
   body("email")
     .trim()
     .notEmpty().withMessage("Email is required")
-    .matches(/^[a-zA-Z0-9._%+-]+@gmail\.com$/).withMessage("Only Gmail addresses (@gmail.com) are allowed"),
+   .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/).withMessage("Please enter a valid email address"),
 
   body("phone")
     .trim()
