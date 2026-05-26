@@ -2,6 +2,7 @@ const express = require("express");
 const { body, validationResult } = require("express-validator");
 const Student = require("../models/Student");
 const upload = require("../config/gridfs");
+const { sendPaymentConfirmationEmail } = require("../utils/sendEmail");
 
 const router = express.Router();
 
@@ -118,6 +119,22 @@ router.get("/:id/noc", async (req, res) => {
     res.send(buffer);
   } catch (error) {
     res.status(500).json({ success: false, message: "Failed to retrieve NOC" });
+  }
+});
+
+// POST /api/students/:id/payment-confirm — Send confirmation email
+router.post("/:id/payment-confirm", async (req, res) => {
+  try {
+    const student = await Student.findById(req.params.id);
+    if (!student) {
+      return res.status(404).json({ success: false, message: "Student not found" });
+    }
+    await sendPaymentConfirmationEmail(student);
+    await Student.findByIdAndUpdate(req.params.id, { paymentConfirmed: true });
+    res.json({ success: true, message: "Payment confirmation email sent!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Failed to send email. Please try again." });
   }
 });
 

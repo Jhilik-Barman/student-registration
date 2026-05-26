@@ -49,6 +49,7 @@ const studentSchema = new mongoose.Schema(
     nocFileName: { type: String, default: null },
     nocFileData: { type: String, default: null },
     nocFileSize: { type: Number, default: null },
+    paymentConfirmed: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

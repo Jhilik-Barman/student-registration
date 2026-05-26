@@ -54,55 +54,131 @@
 .totalRow .rowValue { color: var(--primary); }
 
 .paymentBox {
-  background: var(--success-bg);
-  border: 1.5px solid #bbf7d0;
-  border-radius: var(--radius-sm);
-  padding: 1.25rem;
+  background: white;
+  border: 2px solid #e8e8e8;
+  border-radius: var(--radius);
+  padding: 1.5rem;
   margin-bottom: 1.5rem;
   text-align: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 
 .paymentTitle {
   font-size: 16px;
   font-weight: 700;
-  color: var(--success);
+  color: var(--text);
   margin-bottom: 0.75rem;
 }
 
-.paymentInstr {
-  font-size: 13px;
-  color: var(--text-muted);
+.bankBadge {
+  display: inline-block;
+  background: #8B0000;
+  color: white;
+  padding: 6px 20px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+.scanTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+}
+
+.qrWrapper {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 0.75rem;
+  padding: 12px;
+  border: 2px solid #e8e8e8;
+  border-radius: var(--radius-sm);
+  width: fit-content;
+}
+
+.qrImage {
+  width: 200px;
+  height: 200px;
+  display: block;
+}
+
+.upiId {
+  font-size: 14px;
+  color: var(--text);
   margin-bottom: 0.5rem;
 }
 
-.paymentList {
-  list-style: none;
-  font-size: 13px;
-  color: var(--text);
+.amount {
+  font-size: 20px;
+  color: var(--primary);
+  font-weight: 700;
   margin-bottom: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
 }
 
-.qrPlaceholder {
-  width: 160px;
-  height: 160px;
-  border: 2px dashed #86efac;
+.instructions {
+  background: #f8faff;
   border-radius: var(--radius-sm);
-  margin: 0 auto 1rem;
+  padding: 10px 14px;
+  margin-bottom: 1rem;
+  text-align: left;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 2rem;
-  color: var(--text-muted);
+  gap: 6px;
 }
 
-.qrPlaceholder p { font-size: 11px; color: var(--text-muted); }
+.instructions p { font-size: 13px; color: var(--text-muted); }
 
-.amount { font-size: 18px; color: var(--success); }
+.payBtn {
+  display: block;
+  padding: 14px;
+  background: var(--primary);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background var(--transition);
+}
+
+.payBtn:hover { background: var(--primary-dark); }
+
+.paidBtn {
+  width: 100%;
+  padding: 14px;
+  background: var(--success);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: all var(--transition);
+}
+
+.paidBtn:hover:not(:disabled) {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.paidBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.errorMsg {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  background: var(--error-bg);
+  color: var(--error);
+  border: 1px solid #fecaca;
+  margin-bottom: 12px;
+}
 
 .restartBtn {
   width: 100%;
@@ -117,6 +193,46 @@
   transition: all var(--transition);
 }
 
-.restartBtn:hover {
-  background: var(--primary-light);
+.restartBtn:hover { background: var(--primary-light); }
+
+/* Success Page */
+.successPage {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.successIcon { font-size: 4rem; margin-bottom: 1rem; }
+
+.successTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--success);
+  margin-bottom: 0.5rem;
+}
+
+.successSubtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.successDetails {
+  background: var(--success-bg);
+  border: 1.5px solid #bbf7d0;
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.successNote {
+  font-size: 13px;
+  color: var(--success);
+  margin-bottom: 1.5rem;
+  background: var(--success-bg);
+  padding: 10px;
+  border-radius: var(--radius-sm);
 }
