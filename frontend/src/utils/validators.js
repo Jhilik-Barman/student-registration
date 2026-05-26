@@ -1,4 +1,3 @@
-// Validate full name — letters and spaces only, 3–100 chars
 export function validateFullName(name) {
   if (!name.trim()) return "Full name is required";
   if (name.trim().length < 3) return "Name must be at least 3 characters";
@@ -7,7 +6,6 @@ export function validateFullName(name) {
   return "";
 }
 
-// Validate Gmail only
 export function validateEmail(email) {
   if (!email.trim()) return "Email is required";
   if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim())) {
@@ -16,12 +14,33 @@ export function validateEmail(email) {
   return "";
 }
 
-// Validate Indian mobile number — 10 digits starting with 6/7/8/9
 export function validatePhone(phone) {
   const cleaned = phone.replace(/\s+/g, "");
   if (!cleaned) return "Phone number is required";
   if (!/^[6-9]\d{9}$/.test(cleaned)) {
     return "Enter a valid 10-digit Indian mobile number (starts with 6, 7, 8, or 9)";
   }
+  return "";
+}
+
+export function validateCollegeName(college) {
+  if (!college.trim()) return "College name is required";
+  if (college.trim().length < 3) return "College name must be at least 3 characters";
+  return "";
+}
+
+export function validateRollNumber(roll) {
+  if (!roll.trim()) return "Roll number is required";
+  if (roll.trim().length < 2) return "Please enter a valid roll number";
+  return "";
+}
+
+export function validateStream(stream) {
+  if (!stream) return "Please select your stream/department";
+  return "";
+}
+
+export function validateCourse(course) {
+  if (!course) return "Please select an internship topic";
   return "";
 }

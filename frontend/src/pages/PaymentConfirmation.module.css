@@ -1,0 +1,122 @@
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2.5rem 2rem;
+  width: 100%;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--success);
+  margin-bottom: 0.4rem;
+}
+
+.subtitle { font-size: 14px; color: var(--text-muted); }
+
+.summary {
+  background: #f8faff;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  gap: 12px;
+}
+
+.rowLabel { color: var(--text-muted); flex-shrink: 0; }
+.rowValue { font-weight: 500; color: var(--text); text-align: right; }
+
+.totalRow {
+  padding-top: 10px;
+  border-top: 1.5px solid var(--border);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.totalRow .rowLabel { color: var(--primary); }
+.totalRow .rowValue { color: var(--primary); }
+
+.paymentBox {
+  background: var(--success-bg);
+  border: 1.5px solid #bbf7d0;
+  border-radius: var(--radius-sm);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.paymentTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--success);
+  margin-bottom: 0.75rem;
+}
+
+.paymentInstr {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.paymentList {
+  list-style: none;
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.qrPlaceholder {
+  width: 160px;
+  height: 160px;
+  border: 2px dashed #86efac;
+  border-radius: var(--radius-sm);
+  margin: 0 auto 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 2rem;
+  color: var(--text-muted);
+}
+
+.qrPlaceholder p { font-size: 11px; color: var(--text-muted); }
+
+.amount { font-size: 18px; color: var(--success); }
+
+.restartBtn {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  color: var(--primary);
+  border: 1.5px solid var(--primary);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.restartBtn:hover {
+  background: var(--primary-light);
+}

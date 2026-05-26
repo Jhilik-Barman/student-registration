@@ -1,9 +1,5 @@
 const mongoose = require("mongoose");
 
-// Indian mobile number validation:
-// - Must start with 6, 7, 8, or 9
-// - Must be exactly 10 digits
-// - No leading 0 or +91 prefix expected (clean 10-digit)
 const indianPhoneRegex = /^[6-9]\d{9}$/;
 
 const studentSchema = new mongoose.Schema(
@@ -16,13 +12,26 @@ const studentSchema = new mongoose.Schema(
       maxlength: [100, "Name must not exceed 100 characters"],
       match: [/^[a-zA-Z\s]+$/, "Name can only contain letters and spaces"],
     },
+    collegeName: {
+      type: String,
+      required: [true, "College name is required"],
+      trim: true,
+      minlength: [3, "College name must be at least 3 characters"],
+      maxlength: [150, "College name must not exceed 150 characters"],
+    },
+    rollNumber: {
+      type: String,
+      required: [true, "Roll number is required"],
+      trim: true,
+      minlength: [2, "Please enter a valid roll number"],
+      maxlength: [20, "Roll number must not exceed 20 characters"],
+    },
     email: {
       type: String,
       required: [true, "Email is required"],
       unique: true,
       lowercase: true,
       trim: true,
-      // Only @gmail.com emails allowed
       match: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Please enter a valid email address"],
     },
     phone: {
@@ -30,12 +39,18 @@ const studentSchema = new mongoose.Schema(
       required: [true, "Phone number is required"],
       unique: true,
       trim: true,
-      match: [indianPhoneRegex, "Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9"],
+      match: [indianPhoneRegex, "Please enter a valid 10-digit Indian mobile number"],
     },
+    stream: { type: String, default: null },
+    courseId: { type: String, default: null },
+    courseName: { type: String, default: null },
+    fee: { type: Number, default: null },
+    mode: { type: String, enum: ["online", "offline", null], default: null },
+    nocFileName: { type: String, default: null },
+    nocFileData: { type: String, default: null },
+    nocFileSize: { type: Number, default: null },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Student", studentSchema);

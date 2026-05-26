@@ -1,24 +1,26 @@
 import { useState } from "react";
 import FormInput from "./FormInput";
-import { validateFullName, validateEmail, validatePhone } from "../utils/validators";
+import { validateFullName, validateEmail, validatePhone, validateCollegeName, validateRollNumber } from "../utils/validators";
 import { registerStudent } from "../utils/api";
 import styles from "./RegistrationForm.module.css";
 
-const initialState = { fullName: "", email: "", phone: "" };
-const initialErrors = { fullName: "", email: "", phone: "" };
-const initialTouched = { fullName: false, email: false, phone: false };
+const initialState = { fullName: "", email: "", phone: "", collegeName: "", rollNumber: "" };
+const initialErrors = { fullName: "", email: "", phone: "", collegeName: "", rollNumber: "" };
+const initialTouched = { fullName: false, email: false, phone: false, collegeName: false, rollNumber: false };
 
-export default function RegistrationForm() {
+export default function RegistrationForm({ onRegistered }) {
   const [form, setForm] = useState(initialState);
   const [errors, setErrors] = useState(initialErrors);
   const [touched, setTouched] = useState(initialTouched);
   const [submitting, setSubmitting] = useState(false);
-  const [serverMessage, setServerMessage] = useState(null); // { type: 'success'|'error', text: '' }
+  const [serverMessage, setServerMessage] = useState(null);
 
   function validate(field, value) {
     if (field === "fullName") return validateFullName(value);
     if (field === "email") return validateEmail(value);
     if (field === "phone") return validatePhone(value);
+    if (field === "collegeName") return validateCollegeName(value);
+    if (field === "rollNumber") return validateRollNumber(value);
     return "";
   }
 
@@ -37,27 +39,18 @@ export default function RegistrationForm() {
     setErrors((prev) => ({ ...prev, [name]: validate(name, value) }));
   }
 
-  function isFormValid() {
-    return (
-      !validateFullName(form.fullName) &&
-      !validateEmail(form.email) &&
-      !validatePhone(form.phone)
-    );
-  }
-
   async function handleSubmit(e) {
     e.preventDefault();
-
-    // Touch all fields on submit
-    const allTouched = { fullName: true, email: true, phone: true };
+    const allTouched = { fullName: true, email: true, phone: true, collegeName: true, rollNumber: true };
     setTouched(allTouched);
     const newErrors = {
       fullName: validate("fullName", form.fullName),
       email: validate("email", form.email),
       phone: validate("phone", form.phone),
+      collegeName: validate("collegeName", form.collegeName),
+      rollNumber: validate("rollNumber", form.rollNumber),
     };
     setErrors(newErrors);
-
     if (Object.values(newErrors).some(Boolean)) return;
 
     setSubmitting(true);
@@ -66,10 +59,7 @@ export default function RegistrationForm() {
     const result = await registerStudent(form);
 
     if (result.ok) {
-      setServerMessage({ type: "success", text: result.message || "Registration successful!" });
-      setForm(initialState);
-      setErrors(initialErrors);
-      setTouched(initialTouched);
+      onRegistered(result.data);
     } else {
       const msg =
         result.errors?.map((e) => e.message).join(", ") ||
@@ -102,19 +92,38 @@ export default function RegistrationForm() {
           hint="Enter your full name as per official records"
           maxLength={100}
         />
-
         <FormInput
-          label="Gmail Address"
+          label="College Name"
+          id="collegeName"
+          type="text"
+          value={form.collegeName}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={touched.collegeName ? errors.collegeName : ""}
+          placeholder="e.g. IEM Kolkata"
+          maxLength={150}
+        />
+        <FormInput
+          label="Roll Number"
+          id="rollNumber"
+          type="text"
+          value={form.rollNumber}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={touched.rollNumber ? errors.rollNumber : ""}
+          placeholder="e.g. 10100222001"
+          maxLength={20}
+        />
+        <FormInput
+          label="Email Address"
           id="email"
           type="email"
           value={form.email}
           onChange={handleChange}
           onBlur={handleBlur}
           error={touched.email ? errors.email : ""}
-          placeholder="yourname@gmail.com"
-          hint="Only @gmail.com addresses are accepted"
+          placeholder="yourname@email.com"
         />
-
         <FormInput
           label="Mobile Number"
           id="phone"
@@ -124,28 +133,18 @@ export default function RegistrationForm() {
           onBlur={handleBlur}
           error={touched.phone ? errors.phone : ""}
           placeholder="e.g. 9876543210"
-          hint="10-digit Indian mobile number (starts with 6, 7, 8, or 9)"
+          hint="10-digit Indian mobile number"
           maxLength={10}
         />
 
         {serverMessage && (
-          <div
-            className={`${styles.serverMsg} ${
-              serverMessage.type === "success" ? styles.successMsg : styles.errorMsg
-            }`}
-            role="alert"
-          >
-            {serverMessage.type === "success" ? "✅ " : "❌ "}
-            {serverMessage.text}
+          <div className={styles.errorMsg} role="alert">
+            ❌ {serverMessage.text}
           </div>
         )}
 
-        <button
-          type="submit"
-          className={styles.submitBtn}
-          disabled={submitting}
-        >
-          {submitting ? "Registering..." : "Register Student"}
+        <button type="submit" className={styles.submitBtn} disabled={submitting}>
+          {submitting ? "Registering..." : "Next: Select Course →"}
         </button>
       </form>
     </div>
