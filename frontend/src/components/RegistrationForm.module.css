@@ -35,6 +35,73 @@
   gap: 1.25rem;
 }
 
+/* College search + dropdown */
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.01em;
+}
+
+.searchInput {
+  padding: 10px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--text);
+  background: var(--card-bg);
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.searchInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 91, 219, 0.12);
+}
+
+.searchInput::placeholder {
+  color: #b0b7c3;
+}
+
+.select {
+  padding: 10px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--text);
+  background: var(--card-bg);
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  max-height: 180px;
+}
+
+.select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 91, 219, 0.12);
+}
+
+.select.hasError {
+  border-color: var(--error);
+  background: var(--error-bg);
+}
+
+.errorText {
+  font-size: 13px;
+  color: var(--error);
+}
+
+.errorText::before {
+  content: "⚠ ";
+}
+
+/* Submit button */
 .submitBtn {
   margin-top: 0.5rem;
   padding: 14px;
@@ -63,22 +130,64 @@
   cursor: not-allowed;
 }
 
-.serverMsg {
+/* Error/Success messages */
+.errorMsg {
   padding: 12px 16px;
   border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 500;
   line-height: 1.5;
+  background: var(--error-bg);
+  color: var(--error);
+  border: 1px solid #fecaca;
 }
 
 .successMsg {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
   background: var(--success-bg);
   color: var(--success);
   border: 1px solid #bbf7d0;
 }
 
-.errorMsg {
-  background: var(--error-bg);
-  color: var(--error);
-  border: 1px solid #fecaca;
+.autocomplete {
+  position: relative;
+}
+
+.dropdownList {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1.5px solid var(--primary);
+  border-radius: var(--radius-sm);
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 100;
+  list-style: none;
+  padding: 4px 0;
+  box-shadow: 0 4px 16px rgba(59,91,219,0.12);
+}
+
+.dropdownItem {
+  padding: 10px 16px;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.dropdownItem:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.selectedCollege {
+  font-size: 13px;
+  color: var(--success);
+  font-weight: 500;
 }
