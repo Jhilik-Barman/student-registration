@@ -92,8 +92,9 @@ export default function App() {
   }
 
   // Student Flow
+  // Student Flow
   return (
-    <>
+    <div className="pageContainer">
       {step === "register" && (
         <RegistrationForm onRegistered={handleRegistered} />
       )}
@@ -114,6 +115,6 @@ export default function App() {
           mode={selectedMode}
         />
       )}
-    </>
+    </div>
   );
 }
