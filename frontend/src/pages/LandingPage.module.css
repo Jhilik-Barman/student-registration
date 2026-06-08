@@ -7,35 +7,28 @@
 .wrapper {
   min-height: 100vh;
   width: 100%;
-  background-image: url("https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80");
+  background-image: url("/background.jpg"); /* তোমার image path */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-
-  padding: 40px 20px;
-  position: relative;
-  overflow-x: hidden;
 }
-
 .overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
-  z-index: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
 }
-
 /* Header */
 
-.header {
+.header,
+.cards,
+.footer {
   position: relative;
   z-index: 2;
-  text-align: center;
-  margin-bottom: 40px;
 }
 
 .logo {
@@ -61,17 +54,13 @@
 /* Cards Container */
 
 .cards {
-  position: relative;
-  z-index: 2;
-
-  width: 100%;
-  max-width: 1150px;
-
   display: flex;
-  gap: 32px;
-
+  gap: 2rem;
   justify-content: center;
   align-items: stretch;
+  width: 100%;
+  max-width: 1200px;
+  padding: 40px;
 }
 
 /* Card */
@@ -307,5 +296,10 @@
 
   .footer {
     margin-top: 20px;
+  }
+}
+@media (max-width: 768px) {
+  .cards {
+    flex-direction: column;
   }
 }

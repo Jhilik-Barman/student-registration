@@ -28,13 +28,16 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 1rem;
 }
 
 #root {
   width: 100%;
+  min-height: 100vh;
+}
+
+
+.pageContainer {
   max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
 }

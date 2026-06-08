@@ -62,7 +62,10 @@ export default function App() {
   if (page === "landing") {
     return (
       <LandingPage
-        onStudentClick={() => { setPage("student"); setStep("register"); }}
+        onStudentClick={() => {
+          setPage("student");
+          setStep("register");
+        }}
         onAdminClick={() => setPage("adminLogin")}
       />
     );
@@ -74,7 +77,12 @@ export default function App() {
       return <AdminPanel onLogout={handleLogout} />;
     }
     return (
-      <AdminLogin onLogin={() => { setIsAdminLoggedIn(true); setPage("admin"); }} />
+      <AdminLogin
+        onLogin={() => {
+          setIsAdminLoggedIn(true);
+          setPage("admin");
+        }}
+      />
     );
   }
 
