@@ -45,7 +45,7 @@ export default function AdminLogin({ onLogin }) {
     <div className={styles.wrapper}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <div className={styles.icon}>🔐</div>
+          <div className={styles.icon}>💻</div>
           <h1 className={styles.title}>Admin Login</h1>
           <p className={styles.subtitle}>Enter your credentials to access the admin panel</p>
         </div>

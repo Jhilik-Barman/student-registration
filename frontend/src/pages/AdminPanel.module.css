@@ -10,6 +10,8 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .title {
@@ -24,6 +26,7 @@
   margin-top: 4px;
 }
 
+/* Buttons */
 .refreshBtn {
   padding: 8px 16px;
   background: var(--primary-light);
@@ -35,12 +38,50 @@
   cursor: pointer;
   transition: all var(--transition);
 }
-
 .refreshBtn:hover {
   background: var(--primary);
   color: white;
 }
 
+.logoutBtn {
+  padding: 8px 16px;
+  background: var(--error-bg);
+  color: var(--error);
+  border: 1.5px solid var(--error);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.logoutBtn:hover {
+  background: var(--error);
+  color: white;
+}
+
+.excelBtn {
+  padding: 8px 16px;
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1.5px solid #16a34a;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.excelBtn:hover {
+  background: #16a34a;
+  color: white;
+}
+.excelBtn:disabled {
+  background: #f0fdf4;
+  color: #86efac;
+  border-color: #86efac;
+  cursor: not-allowed;
+}
+
+/* Controls */
 .controls {
   display: flex;
   gap: 12px;
@@ -58,7 +99,6 @@
   outline: none;
   transition: border-color var(--transition);
 }
-
 .search:focus {
   border-color: var(--primary);
 }
@@ -78,25 +118,23 @@
   color: var(--text);
   transition: all var(--transition);
 }
-
 .filterBtn:hover {
   border-color: var(--primary);
   color: var(--primary);
 }
-
 .activeFilter {
   background: var(--primary);
   color: white;
   border-color: var(--primary);
 }
 
+/* States */
 .loading {
   text-align: center;
   padding: 3rem;
   color: var(--text-muted);
   font-size: 16px;
 }
-
 .error {
   text-align: center;
   padding: 2rem;
@@ -104,7 +142,6 @@
   background: var(--error-bg);
   border-radius: var(--radius-sm);
 }
-
 .empty {
   text-align: center;
   padding: 3rem;
@@ -112,47 +149,43 @@
   font-size: 15px;
 }
 
+/* Table */
 .tableWrapper {
   overflow-x: auto;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
-
 .table {
   width: 100%;
   border-collapse: collapse;
   background: white;
   font-size: 13px;
 }
-
 .table thead {
   background: var(--primary);
   color: white;
 }
-
 .table th {
   padding: 12px 14px;
   text-align: left;
   font-weight: 600;
   white-space: nowrap;
 }
-
 .table td {
   padding: 12px 14px;
   border-bottom: 1px solid var(--border);
   color: var(--text);
   vertical-align: middle;
 }
-
 .table tbody tr:hover {
   background: var(--primary-light);
 }
-
 .nameCell {
   font-weight: 600;
   white-space: nowrap;
 }
 
+/* Badges */
 .modeBadge {
   padding: 4px 10px;
   border-radius: 20px;
@@ -160,17 +193,16 @@
   font-weight: 600;
   white-space: nowrap;
 }
-
 .online {
   background: #dbeafe;
   color: #1d4ed8;
 }
-
 .offline {
   background: #dcfce7;
   color: #15803d;
 }
 
+/* Row buttons */
 .nocBtn {
   padding: 5px 10px;
   background: var(--primary-light);
@@ -182,12 +214,10 @@
   white-space: nowrap;
   transition: all var(--transition);
 }
-
 .nocBtn:hover {
   background: var(--primary);
   color: white;
 }
-
 .detailBtn {
   padding: 5px 10px;
   background: #f0fdf4;
@@ -199,7 +229,6 @@
   white-space: nowrap;
   transition: all var(--transition);
 }
-
 .detailBtn:hover {
   background: #15803d;
   color: white;
@@ -216,7 +245,6 @@
   z-index: 100;
   padding: 1rem;
 }
-
 .modal {
   background: white;
   border-radius: var(--radius);
@@ -227,7 +255,6 @@
   max-height: 90vh;
   overflow-y: auto;
 }
-
 .closeBtn {
   position: absolute;
   top: 1rem;
@@ -238,21 +265,18 @@
   cursor: pointer;
   color: var(--text-muted);
 }
-
 .modalTitle {
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--primary);
   margin-bottom: 1.25rem;
 }
-
 .modalRows {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-bottom: 1.5rem;
 }
-
 .modalRow {
   display: flex;
   justify-content: space-between;
@@ -261,18 +285,15 @@
   padding-bottom: 10px;
   border-bottom: 1px solid var(--border);
 }
-
 .modalLabel {
   color: var(--text-muted);
   flex-shrink: 0;
 }
-
 .modalValue {
   font-weight: 500;
   color: var(--text);
   text-align: right;
 }
-
 .downloadBtn {
   width: 100%;
   padding: 12px;
@@ -285,23 +306,6 @@
   cursor: pointer;
   transition: background var(--transition);
 }
-
 .downloadBtn:hover {
   background: var(--primary-dark);
-}
-.logoutBtn {
-  padding: 8px 16px;
-  background: var(--error-bg);
-  color: var(--error);
-  border: 1.5px solid var(--error);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition);
-}
-
-.logoutBtn:hover {
-  background: var(--error);
-  color: white;
 }

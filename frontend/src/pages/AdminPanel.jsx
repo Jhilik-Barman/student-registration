@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import * as XLSX from "xlsx";
 import styles from "./AdminPanel.module.css";
 
 export default function AdminPanel({ onLogout }) {
@@ -33,6 +34,7 @@ export default function AdminPanel({ onLogout }) {
     window.open(`/api/students/${studentId}/noc`, "_blank");
   }
 
+  // ── filtered আগে define করা হচ্ছে ──
   const filtered = students.filter((s) => {
     const matchesFilter =
       filter === "all" ||
@@ -43,10 +45,42 @@ export default function AdminPanel({ onLogout }) {
       s.fullName.toLowerCase().includes(search.toLowerCase()) ||
       s.email.toLowerCase().includes(search.toLowerCase()) ||
       s.phone.includes(search) ||
-      (s.rollNumber && s.rollNumber.toLowerCase().includes(search.toLowerCase()));
+      (s.rollNumber && s.rollNumber.toLowerCase().includes(search.toLowerCase())) ||
+      (s.collegeName && s.collegeName.toLowerCase().includes(search.toLowerCase()));
 
     return matchesFilter && matchesSearch;
   });
+
+  // ── filtered এর পরে define করা হচ্ছে ──
+  function handleDownloadExcel() {
+    const rows = filtered.map((s, i) => ({
+      "#": i + 1,
+      "Full Name": s.fullName,
+      "College": s.collegeName,
+      "Roll Number": s.rollNumber || "—",
+      "Email": s.email,
+      "Phone": s.phone,
+      "Stream": s.stream || "—",
+      "Course": s.courseName || "—",
+      "Fee (₹)": s.fee || "—",
+      "Mode": s.mode || "—",
+      "NOC Uploaded": s.nocFileName ? "Yes" : "No",
+      "Registered At": new Date(s.createdAt).toLocaleString(),
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+
+    const colWidths = Object.keys(rows[0] || {}).map((key) => ({
+      wch: Math.max(key.length, ...rows.map((r) => String(r[key] ?? "").length)) + 2,
+    }));
+    worksheet["!cols"] = colWidths;
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Students");
+
+    const fileName = `students_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+  }
 
   return (
     <div className={styles.wrapper}>
@@ -55,10 +89,17 @@ export default function AdminPanel({ onLogout }) {
           <h1 className={styles.title}>🎓 Admin Panel</h1>
           <p className={styles.subtitle}>Total Students: <strong>{students.length}</strong></p>
         </div>
-        <div style={{display:"flex", gap:"10px"}}>
-  <button className={styles.refreshBtn} onClick={fetchStudents}>🔄 Refresh</button>
-  <button className={styles.logoutBtn} onClick={onLogout}>🚪 Logout</button>
-</div>
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button
+            className={styles.excelBtn}
+            onClick={handleDownloadExcel}
+            disabled={filtered.length === 0}
+          >
+            Download Excel{filtered.length !== students.length ? ` (${filtered.length})` : ""}
+          </button>
+          <button className={styles.refreshBtn} onClick={fetchStudents}> Refresh</button>
+          <button className={styles.logoutBtn} onClick={onLogout}> Logout</button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -66,7 +107,7 @@ export default function AdminPanel({ onLogout }) {
         <input
           className={styles.search}
           type="text"
-          placeholder="Search by name, email, phone, roll no..."
+          placeholder="Search by name, email, phone, roll no, college..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -131,19 +172,13 @@ export default function AdminPanel({ onLogout }) {
                   </td>
                   <td>
                     {s.nocFileName ? (
-                      <button
-                        className={styles.nocBtn}
-                        onClick={() => handleViewNOC(s._id)}
-                      >
-                        📄 View
+                      <button className={styles.nocBtn} onClick={() => handleViewNOC(s._id)}>
+                         View
                       </button>
                     ) : "—"}
                   </td>
                   <td>
-                    <button
-                      className={styles.detailBtn}
-                      onClick={() => setSelectedStudent(s)}
-                    >
+                    <button className={styles.detailBtn} onClick={() => setSelectedStudent(s)}>
                       👁 View
                     </button>
                   </td>
@@ -181,11 +216,8 @@ export default function AdminPanel({ onLogout }) {
               ))}
             </div>
             {selectedStudent.nocFileName && (
-              <button
-                className={styles.downloadBtn}
-                onClick={() => handleViewNOC(selectedStudent._id)}
-              >
-                📄 View / Download NOC
+              <button className={styles.downloadBtn} onClick={() => handleViewNOC(selectedStudent._id)}>
+                 View / Download NOC
               </button>
             )}
           </div>
