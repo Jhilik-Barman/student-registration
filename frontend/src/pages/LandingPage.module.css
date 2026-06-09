@@ -7,26 +7,14 @@
 .wrapper {
   min-height: 100vh;
   width: 100%;
-<<<<<<< Updated upstream
-  background-image: url("/background.jpg"); /* তোমার image path */
+  background-image: url("/background.jpg"); 
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-=======
-background-image: url("https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1920&q=80");  background-repeat: no-repeat;
->>>>>>> Stashed changes
 
   display: flex;
   flex-direction: column;
   align-items: center;
-<<<<<<< Updated upstream
-=======
-
-  padding: 40px 20px;
-  position: relative;
-  overflow-x: hidden;
-  
->>>>>>> Stashed changes
 }
 .overlay {
   position: fixed;
@@ -41,25 +29,11 @@ background-image: url("https://images.unsplash.com/photo-1498050108023-c5249f4df
 .footer {
   position: relative;
   z-index: 2;
-<<<<<<< Updated upstream
-=======
-  text-align: center;
-
-  transform: translateY(-60px);
->>>>>>> Stashed changes
 }
 
 .logo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  font-size: 3rem;
   margin-bottom: 10px;
-}
-
-.logo img {
-  width: 250px;
-  height: auto;
-  object-fit: contain;
 }
 
 .headerTitle {
@@ -170,7 +144,8 @@ background-image: url("https://images.unsplash.com/photo-1498050108023-c5249f4df
   text-transform: uppercase;
 
   margin-bottom: 10px;
-   text-align: center;
+    text-align: center;
+
 }
 
 .tagStudent {
@@ -327,13 +302,9 @@ background-image: url("https://images.unsplash.com/photo-1498050108023-c5249f4df
   .footer {
     margin-top: 20px;
   }
-<<<<<<< Updated upstream
 }
 @media (max-width: 768px) {
   .cards {
     flex-direction: column;
   }
-=======
-  
->>>>>>> Stashed changes
 }
