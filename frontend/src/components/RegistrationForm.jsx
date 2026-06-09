@@ -209,7 +209,7 @@ export default function RegistrationForm({ onRegistered }) {
   return (
     <div className={styles.card}>
       <div className={styles.header}>
-        <div className={styles.icon}>🎓</div>
+        <div className={styles.icon}></div>
         <h1 className={styles.title}>Student Registration</h1>
         <p className={styles.subtitle}>Fill in the details below to register</p>
       </div>
@@ -265,10 +265,10 @@ export default function RegistrationForm({ onRegistered }) {
             )}
           </div>
           {touched.collegeName && errors.collegeName && (
-            <p className={styles.errorText}>⚠ {errors.collegeName}</p>
+            <p className={styles.errorText}> {errors.collegeName}</p>
           )}
           {form.collegeName && !errors.collegeName && (
-            <p className={styles.selectedCollege}>✅ {form.collegeName}</p>
+            <p className={styles.selectedCollege}> {form.collegeName}</p>
           )}
         </div>
 

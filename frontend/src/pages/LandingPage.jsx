@@ -1,5 +1,5 @@
 import styles from "./LandingPage.module.css";
-import logo from "../../../logog.png";
+import logo from "../../public//logog.png";
 
 export default function LandingPage({ onStudentClick, onAdminClick }) {
   return (
@@ -10,10 +10,8 @@ export default function LandingPage({ onStudentClick, onAdminClick }) {
         <div className={styles.logo}>
           <img src={logo} alt="Logo" />
         </div>
-        <h1 className={styles.headerTitle}>Corporates Guide</h1>
-        <p className={styles.headerSubtitle}>
-          Summer Internship 2026 — Registration Portal
-        </p>
+        
+       
       </div>
 
       <div className={styles.cards}>
@@ -21,17 +19,17 @@ export default function LandingPage({ onStudentClick, onAdminClick }) {
         <div className={styles.card}>
           <div className={styles.cardTop}>
             <div className={`${styles.iconBox} ${styles.iconStudent}`}>
-              <span>👨‍🎓</span>
+              <span>📖</span>
             </div>
             <div>
               <p className={`${styles.tag} ${styles.tagStudent}`}>
-                PUBLIC ACCESS
+                STUDENT ACCESS
               </p>
               <h2 className={styles.cardTitle}>Student Registration</h2>
             </div>
           </div>
           <p className={styles.cardDesc}>
-            For students applying for Summer Internship 2026. Register with your
+            For students applying for Internship Programs. Register with your
             college details, select your preferred course, and complete the
             payment process.
           </p>
@@ -47,7 +45,7 @@ export default function LandingPage({ onStudentClick, onAdminClick }) {
         <div className={styles.card}>
           <div className={styles.cardTop}>
             <div className={`${styles.iconBox} ${styles.iconAdmin}`}>
-              <span>🔐</span>
+              <span>💻</span>
             </div>
             <div>
               <p className={`${styles.tag} ${styles.tagAdmin}`}>
