@@ -7,7 +7,7 @@ export async function registerStudent(data) {
     body: JSON.stringify(data),
   });
   const result = await response.json();
-  return { ok: response.ok, status: response.status, ...result };
+  return { ok: response.ok, data: result.data, message: result.message, errors: result.errors };
 }
 
 export async function selectCourse(studentId, courseData) {
@@ -20,10 +20,10 @@ export async function selectCourse(studentId, courseData) {
   return { ok: response.ok, status: response.status, ...result };
 }
 
-export async function confirmPayment(studentId) {
+export async function confirmPayment(studentId, formData) {
   const response = await fetch(`${API_BASE}/students/${studentId}/payment-confirm`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    body: formData,
   });
   const result = await response.json();
   return { ok: response.ok, status: response.status, ...result };

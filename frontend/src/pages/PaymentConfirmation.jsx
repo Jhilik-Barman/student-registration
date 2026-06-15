@@ -11,6 +11,8 @@ export default function PaymentConfirmation({ student, course, mode }) {
   const [paid, setPaid] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [screenshot, setScreenshot] = useState(null);
+  const [preview, setPreview] = useState(null);
 
   const qrUrl = generateUPIQR(
     "corporatesguide@idfcbank",
@@ -21,10 +23,29 @@ export default function PaymentConfirmation({ student, course, mode }) {
 
   const upiDeepLink = `upi://pay?pa=corporatesguide@idfcbank&pn=${encodeURIComponent("Corporates Guide")}&am=${course.fee}&cu=INR&tn=${encodeURIComponent(`Internship Fee - ${course.name}`)}`;
 
+  function handleFileChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    setScreenshot(file);
+    setPreview(URL.createObjectURL(file));
+    setError("");
+  }
+
   async function handlePaymentDone() {
+    if (!screenshot) {
+      setError("Please upload your payment screenshot before submitting.");
+      return;
+    }
+
     setLoading(true);
     setError("");
-    const result = await confirmPayment(student._id);
+
+    const formData = new FormData();
+    formData.append("screenshot", screenshot);
+
+    // studentId is passed separately, FormData carries the file
+    const result = await confirmPayment(student._id, formData);
+
     if (result.ok) {
       setPaid(true);
     } else {
@@ -37,7 +58,7 @@ export default function PaymentConfirmation({ student, course, mode }) {
     return (
       <div className={styles.card}>
         <div className={styles.successPage}>
-          <div className={styles.successIcon}>✅</div>
+          <div className={styles.successIcon}></div>
           <h1 className={styles.successTitle}>Payment Confirmed!</h1>
           <p className={styles.successSubtitle}>
             A confirmation email has been sent to <strong>{student.email}</strong>
@@ -61,10 +82,10 @@ export default function PaymentConfirmation({ student, course, mode }) {
             </div>
           </div>
           <p className={styles.successNote}>
-            📧 Please check your email inbox for the confirmation details.
+             Please check your email inbox for the confirmation details.
           </p>
           <button className={styles.restartBtn} onClick={() => window.location.reload()}>
-            Register Another Student
+            Go Back to Start
           </button>
         </div>
       </div>
@@ -74,7 +95,7 @@ export default function PaymentConfirmation({ student, course, mode }) {
   return (
     <div className={styles.card}>
       <div className={styles.header}>
-        <div className={styles.icon}>🎉</div>
+        <div className={styles.icon}></div>
         <h1 className={styles.title}>Registration Complete!</h1>
         <p className={styles.subtitle}>Your internship registration has been confirmed.</p>
       </div>
@@ -119,7 +140,7 @@ export default function PaymentConfirmation({ student, course, mode }) {
       </div>
 
       <div className={styles.paymentBox}>
-        <h2 className={styles.paymentTitle}>💳 Summer Internship Payment</h2>
+        <h2 className={styles.paymentTitle}> Summer Internship Payment</h2>
         <div className={styles.bankBadge}>IDFC FIRST Bank</div>
         <p className={styles.scanTitle}>SCAN &amp; PAY</p>
         <div className={styles.qrWrapper}>
@@ -128,16 +149,39 @@ export default function PaymentConfirmation({ student, course, mode }) {
         <p className={styles.upiId}>UPI ID: <strong>corporatesguide@idfcbank</strong></p>
         <p className={styles.amount}>Amount: <strong>₹{course.fee}/-</strong></p>
         <div className={styles.instructions}>
-          <p>📱 <strong>Mobile:</strong> Long-press the QR code to pay</p>
-          <p>🖥️ <strong>Desktop:</strong> Scan using any UPI app (GPay, PhonePe, Paytm)</p>
+          <p> <strong>Mobile:</strong> Long-press the QR code to pay</p>
+          <p> <strong>Desktop:</strong> Scan using any UPI app (GPay, PhonePe, Paytm)</p>
         </div>
         <a href={upiDeepLink} className={styles.payBtn}>
           Pay ₹{course.fee}/- Now
         </a>
       </div>
 
+      {/* Screenshot Upload Section */}
+      <div className={styles.uploadBox}>
+        <p className={styles.uploadLabel}> Upload Payment Screenshot</p>
+        <p className={styles.uploadHint}>Take a payment success screenshot from GPay / PhonePe / Paytm</p>
+
+        <label className={styles.fileLabel}>
+           Choose Screenshot
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className={styles.fileInput}
+          />
+        </label>
+
+        {preview && (
+          <div className={styles.previewWrapper}>
+            <p className={styles.previewText}> Screenshot selected:</p>
+            <img src={preview} alt="Payment screenshot preview" className={styles.previewImg} />
+          </div>
+        )}
+      </div>
+
       {error && (
-        <div className={styles.errorMsg}>❌ {error}</div>
+        <div className={styles.errorMsg}> {error}</div>
       )}
 
       <button
@@ -145,11 +189,11 @@ export default function PaymentConfirmation({ student, course, mode }) {
         onClick={handlePaymentDone}
         disabled={loading}
       >
-        {loading ? "Sending confirmation..." : "✅ I Have Paid — Send Confirmation Email"}
+        {loading ? "Sending confirmation..." : "Submit Screenshot & Get Confirmation Email"}
       </button>
 
       <button className={styles.restartBtn} onClick={() => window.location.reload()}>
-        Register Another Student
+        Go Back to Start
       </button>
     </div>
   );
