@@ -3,8 +3,13 @@ import { confirmPayment } from "../utils/api";
 import styles from "./PaymentConfirmation.module.css";
 
 function generateUPIQR(upiId, name, amount, note) {
-  const upiString = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
-  return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiString)}`;
+  const upiString = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(
+    name
+  )}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+
+  return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+    upiString
+  )}`;
 }
 
 export default function PaymentConfirmation({ student, course, mode }) {
@@ -21,11 +26,11 @@ export default function PaymentConfirmation({ student, course, mode }) {
     `Internship Fee - ${course.name} - ${student.fullName}`
   );
 
-  const upiDeepLink = `upi://pay?pa=corporatesguide@idfcbank&pn=${encodeURIComponent("Corporates Guide")}&am=${course.fee}&cu=INR&tn=${encodeURIComponent(`Internship Fee - ${course.name}`)}`;
-
   function handleFileChange(e) {
     const file = e.target.files[0];
+
     if (!file) return;
+
     setScreenshot(file);
     setPreview(URL.createObjectURL(file));
     setError("");
@@ -33,7 +38,9 @@ export default function PaymentConfirmation({ student, course, mode }) {
 
   async function handlePaymentDone() {
     if (!screenshot) {
-      setError("Please upload your payment screenshot before submitting.");
+      setError(
+        "Please upload your payment screenshot before submitting."
+      );
       return;
     }
 
@@ -43,14 +50,16 @@ export default function PaymentConfirmation({ student, course, mode }) {
     const formData = new FormData();
     formData.append("screenshot", screenshot);
 
-    // studentId is passed separately, FormData carries the file
     const result = await confirmPayment(student._id, formData);
 
     if (result.ok) {
       setPaid(true);
     } else {
-      setError(result.message || "Something went wrong. Please try again.");
+      setError(
+        result.message || "Something went wrong. Please try again."
+      );
     }
+
     setLoading(false);
   }
 
@@ -59,32 +68,56 @@ export default function PaymentConfirmation({ student, course, mode }) {
       <div className={styles.card}>
         <div className={styles.successPage}>
           <div className={styles.successIcon}></div>
-          <h1 className={styles.successTitle}>Payment Confirmed!</h1>
+
+          <h1 className={styles.successTitle}>
+            Payment Confirmed!
+          </h1>
+
           <p className={styles.successSubtitle}>
-            A confirmation email has been sent to <strong>{student.email}</strong>
+            A confirmation email has been sent to{" "}
+            <strong>{student.email}</strong>
           </p>
+
           <div className={styles.successDetails}>
             <div className={styles.row}>
               <span className={styles.rowLabel}>Name</span>
-              <span className={styles.rowValue}>{student.fullName}</span>
+              <span className={styles.rowValue}>
+                {student.fullName}
+              </span>
             </div>
+
             <div className={styles.row}>
               <span className={styles.rowLabel}>College</span>
-              <span className={styles.rowValue}>{student.collegeName}</span>
+              <span className={styles.rowValue}>
+                {student.collegeName}
+              </span>
             </div>
+
             <div className={styles.row}>
               <span className={styles.rowLabel}>Course</span>
-              <span className={styles.rowValue}>{course.name}</span>
+              <span className={styles.rowValue}>
+                {course.name}
+              </span>
             </div>
+
             <div className={styles.row}>
-              <span className={styles.rowLabel}>Amount Paid</span>
-              <span className={styles.rowValue}>₹{course.fee}/-</span>
+              <span className={styles.rowLabel}>
+                Amount Paid
+              </span>
+              <span className={styles.rowValue}>
+                ₹{course.fee}/-
+              </span>
             </div>
           </div>
+
           <p className={styles.successNote}>
-             Please check your email inbox for the confirmation details.
+            Please check your email inbox for the confirmation details.
           </p>
-          <button className={styles.restartBtn} onClick={() => window.location.reload()}>
+
+          <button
+            className={styles.restartBtn}
+            onClick={() => window.location.reload()}
+          >
             Go Back to Start
           </button>
         </div>
@@ -96,74 +129,145 @@ export default function PaymentConfirmation({ student, course, mode }) {
     <div className={styles.card}>
       <div className={styles.header}>
         <div className={styles.icon}></div>
-        <h1 className={styles.title}>Registration Complete!</h1>
-        <p className={styles.subtitle}>Your internship registration has been confirmed.</p>
+
+        <h1 className={styles.title}>
+          Registration Complete!
+        </h1>
+
+        <p className={styles.subtitle}>
+          Your internship registration has been confirmed.
+        </p>
       </div>
 
       <div className={styles.summary}>
         <div className={styles.row}>
           <span className={styles.rowLabel}>Name</span>
-          <span className={styles.rowValue}>{student.fullName}</span>
+          <span className={styles.rowValue}>
+            {student.fullName}
+          </span>
         </div>
+
         <div className={styles.row}>
           <span className={styles.rowLabel}>College</span>
-          <span className={styles.rowValue}>{student.collegeName}</span>
+          <span className={styles.rowValue}>
+            {student.collegeName}
+          </span>
         </div>
+
         <div className={styles.row}>
           <span className={styles.rowLabel}>Roll No.</span>
-          <span className={styles.rowValue}>{student.rollNumber}</span>
+          <span className={styles.rowValue}>
+            {student.rollNumber}
+          </span>
         </div>
+
         <div className={styles.row}>
           <span className={styles.rowLabel}>Email</span>
-          <span className={styles.rowValue}>{student.email}</span>
+          <span className={styles.rowValue}>
+            {student.email}
+          </span>
         </div>
+
         <div className={styles.row}>
           <span className={styles.rowLabel}>Phone</span>
-          <span className={styles.rowValue}>{student.phone}</span>
+          <span className={styles.rowValue}>
+            {student.phone}
+          </span>
         </div>
+
         <div className={styles.row}>
           <span className={styles.rowLabel}>Stream</span>
-          <span className={styles.rowValue}>{student.stream}</span>
+          <span className={styles.rowValue}>
+            {student.stream}
+          </span>
         </div>
+
         <div className={styles.row}>
           <span className={styles.rowLabel}>Course</span>
-          <span className={styles.rowValue}>{course.name}</span>
+          <span className={styles.rowValue}>
+            {course.name}
+          </span>
         </div>
+
         <div className={styles.row}>
           <span className={styles.rowLabel}>Mode</span>
-          <span className={styles.rowValue}>{mode === "online" ? "💻 Online" : "🏢 Offline"}</span>
+          <span className={styles.rowValue}>
+            {mode === "online"
+              ? "💻 Online"
+              : "🏢 Offline"}
+          </span>
         </div>
-        <div className={`${styles.row} ${styles.totalRow}`}>
-          <span className={styles.rowLabel}>Total Fee</span>
-          <span className={styles.rowValue}>₹{course.fee}/- ({course.base}+{course.gst}% GST)</span>
+
+        <div
+          className={`${styles.row} ${styles.totalRow}`}
+        >
+          <span className={styles.rowLabel}>
+            Total Fee
+          </span>
+
+          <span className={styles.rowValue}>
+            ₹{course.fee}/- ({course.base}+{course.gst}%
+            GST)
+          </span>
         </div>
       </div>
 
       <div className={styles.paymentBox}>
-        <h2 className={styles.paymentTitle}> Summer Internship Payment</h2>
-        <div className={styles.bankBadge}>IDFC FIRST Bank</div>
-        <p className={styles.scanTitle}>SCAN &amp; PAY</p>
+        <h2 className={styles.paymentTitle}>
+          Summer Internship Payment
+        </h2>
+
+        <div className={styles.bankBadge}>
+          IDFC FIRST Bank
+        </div>
+
+        <p className={styles.scanTitle}>
+          SCAN &amp; PAY
+        </p>
+
         <div className={styles.qrWrapper}>
-          <img src={qrUrl} alt="UPI QR Code" className={styles.qrImage} />
+          <img
+            src={qrUrl}
+            alt="UPI QR Code"
+            className={styles.qrImage}
+          />
         </div>
-        <p className={styles.upiId}>UPI ID: <strong>corporatesguide@idfcbank</strong></p>
-        <p className={styles.amount}>Amount: <strong>₹{course.fee}/-</strong></p>
+
+        <p className={styles.upiId}>
+          UPI ID:{" "}
+          <strong>corporatesguide@idfcbank</strong>
+        </p>
+
+        <p className={styles.amount}>
+          Amount: <strong>₹{course.fee}/-</strong>
+        </p>
+
         <div className={styles.instructions}>
-          <p> <strong>Mobile:</strong> Long-press the QR code to pay</p>
-          <p> <strong>Desktop:</strong> Scan using any UPI app (GPay, PhonePe, Paytm)</p>
+          <p>
+            <strong>Mobile:</strong> Long-press the QR
+            code to pay
+          </p>
+
+          <p>
+            <strong>Desktop:</strong> Scan using any
+            UPI app (GPay, PhonePe, Paytm)
+          </p>
         </div>
-        <a href={upiDeepLink} className={styles.payBtn}>
-          Pay ₹{course.fee}/- Now
-        </a>
       </div>
 
-      {/* Screenshot Upload Section */}
       <div className={styles.uploadBox}>
-        <p className={styles.uploadLabel}> Upload Payment Screenshot</p>
-        <p className={styles.uploadHint}>Take a payment success screenshot from GPay / PhonePe / Paytm</p>
+        <p className={styles.uploadLabel}>
+          Upload Payment Screenshot
+        </p>
+
+        <p className={styles.uploadHint}>
+          Take a payment success screenshot from GPay /
+          PhonePe / Paytm
+        </p>
 
         <label className={styles.fileLabel}>
-           Choose Screenshot
+          Choose Screenshot
+
           <input
             type="file"
             accept="image/*"
@@ -174,14 +278,23 @@ export default function PaymentConfirmation({ student, course, mode }) {
 
         {preview && (
           <div className={styles.previewWrapper}>
-            <p className={styles.previewText}> Screenshot selected:</p>
-            <img src={preview} alt="Payment screenshot preview" className={styles.previewImg} />
+            <p className={styles.previewText}>
+              Screenshot selected:
+            </p>
+
+            <img
+              src={preview}
+              alt="Payment screenshot preview"
+              className={styles.previewImg}
+            />
           </div>
         )}
       </div>
 
       {error && (
-        <div className={styles.errorMsg}> {error}</div>
+        <div className={styles.errorMsg}>
+          {error}
+        </div>
       )}
 
       <button
@@ -189,10 +302,15 @@ export default function PaymentConfirmation({ student, course, mode }) {
         onClick={handlePaymentDone}
         disabled={loading}
       >
-        {loading ? "Sending confirmation..." : "Submit Screenshot & Get Confirmation Email"}
+        {loading
+          ? "Sending confirmation..."
+          : "Submit Screenshot & Get Confirmation Email"}
       </button>
 
-      <button className={styles.restartBtn} onClick={() => window.location.reload()}>
+      <button
+        className={styles.restartBtn}
+        onClick={() => window.location.reload()}
+      >
         Go Back to Start
       </button>
     </div>
