@@ -50,7 +50,14 @@ const studentSchema = new mongoose.Schema(
     nocFileData: { type: String, default: null },
     nocFileSize: { type: Number, default: null },
     paymentConfirmed: { type: Boolean, default: false },
-    screenshotPath: { type: String, default: null }, // NEW: payment screenshot filename
+    paymentStatus: {
+      type: String,
+      enum: ["Pending", "Successful", "Rejected", "Not Submitted"],
+      default: "Not Submitted",
+    },
+    paymentSubmittedAt: { type: Date, default: null },
+    paymentReviewedAt: { type: Date, default: null },
+    screenshotPath: { type: String, default: null },
   },
   { timestamps: true }
 );

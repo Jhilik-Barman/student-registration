@@ -28,3 +28,26 @@ export async function confirmPayment(studentId, formData) {
   const result = await response.json();
   return { ok: response.ok, status: response.status, ...result };
 }
+
+export async function getAdminStudents(token) {
+  const response = await fetch(`${API_BASE}/students`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const result = await response.json();
+  return { ok: response.ok, status: response.status, ...result };
+}
+
+export async function updatePaymentStatus(studentId, status, token) {
+  const response = await fetch(`${API_BASE}/students/${studentId}/payment-status`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
+  const result = await response.json();
+  return { ok: response.ok, status: response.status, ...result };
+}

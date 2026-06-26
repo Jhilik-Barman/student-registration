@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import * as XLSX from "xlsx";
+import { getAdminStudents, updatePaymentStatus } from "../utils/api";
 import styles from "./AdminPanel.module.css";
 
 export default function AdminPanel({ onLogout }) {
@@ -9,19 +10,31 @@ export default function AdminPanel({ onLogout }) {
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [screenshotError, setScreenshotError] = useState(null);
 
   useEffect(() => {
     fetchStudents();
   }, []);
 
   async function fetchStudents() {
+    setLoading(true);
+    setError(null);
+    const token = localStorage.getItem("adminToken");
+    if (!token) {
+      setError("Admin authentication required.");
+      onLogout();
+      return;
+    }
     try {
-      const res = await fetch("/api/students");
-      const data = await res.json();
+      const data = await getAdminStudents(token);
       if (data.success) {
         setStudents(data.data);
       } else {
-        setError("Failed to load students");
+        setError(data.message || "Failed to load students");
+        if (data.status === 401) {
+          onLogout();
+        }
       }
     } catch (err) {
       setError("Server error. Please try again.");
@@ -32,6 +45,60 @@ export default function AdminPanel({ onLogout }) {
 
   function handleViewNOC(studentId) {
     window.open(`/api/students/${studentId}/noc`, "_blank");
+  }
+
+  async function handleViewScreenshot(studentId) {
+    const token = localStorage.getItem("adminToken");
+    if (!token) {
+      onLogout();
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/students/${studentId}/screenshot`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        setScreenshotError("Unable to load screenshot. Please refresh and try again.");
+        if (response.status === 401) onLogout();
+        return;
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+    } catch (err) {
+      setScreenshotError("Unable to load screenshot. Please try again.");
+    }
+  }
+
+  async function handlePaymentAction(studentId, status) {
+    setActionLoading(true);
+    setScreenshotError(null);
+    const token = localStorage.getItem("adminToken");
+    if (!token) {
+      setError("Admin authentication required.");
+      onLogout();
+      return;
+    }
+
+    try {
+      const response = await updatePaymentStatus(studentId, status, token);
+      if (response.success) {
+        setStudents((prev) => prev.map((student) => student._id === studentId ? response.data : student));
+        if (selectedStudent?._id === studentId) {
+          setSelectedStudent(response.data);
+        }
+      } else {
+        setScreenshotError(response.message || "Unable to update payment status.");
+        if (response.status === 401) {
+          onLogout();
+        }
+      }
+    } catch (err) {
+      setScreenshotError("Server error. Please try again.");
+    } finally {
+      setActionLoading(false);
+    }
   }
 
   // ── filtered আগে define করা হচ্ছে ──
@@ -147,8 +214,8 @@ export default function AdminPanel({ onLogout }) {
                 <th>Course</th>
                 <th>Fee</th>
                 <th>Mode</th>
-                <th>NOC</th>
-                <th>Details</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -171,15 +238,18 @@ export default function AdminPanel({ onLogout }) {
                     ) : "—"}
                   </td>
                   <td>
-                    {s.nocFileName ? (
-                      <button className={styles.nocBtn} onClick={() => handleViewNOC(s._id)}>
-                         View
+                    <span className={`${styles.paymentBadge} ${s.paymentStatus === "Successful" ? styles.success : s.paymentStatus === "Rejected" ? styles.rejected : s.paymentStatus === "Pending" ? styles.pending : styles.notSubmitted}`}>
+                      {s.paymentStatus || "Not Submitted"}
+                    </span>
+                  </td>
+                  <td className={styles.actionCell}>
+                    {s.screenshotPath ? (
+                      <button className={styles.screenshotBtn} onClick={() => handleViewScreenshot(s)}>
+                        View Screenshot
                       </button>
                     ) : "—"}
-                  </td>
-                  <td>
                     <button className={styles.detailBtn} onClick={() => setSelectedStudent(s)}>
-                      👁 View
+                      Details
                     </button>
                   </td>
                 </tr>
@@ -206,6 +276,9 @@ export default function AdminPanel({ onLogout }) {
                 ["Course", selectedStudent.courseName || "—"],
                 ["Fee", selectedStudent.fee ? `₹${selectedStudent.fee}/-` : "—"],
                 ["Mode", selectedStudent.mode || "—"],
+                ["Payment Status", selectedStudent.paymentStatus || "Not Submitted"],
+                ["Payment Submitted", selectedStudent.paymentSubmittedAt ? new Date(selectedStudent.paymentSubmittedAt).toLocaleString() : "—"],
+                ["Reviewed At", selectedStudent.paymentReviewedAt ? new Date(selectedStudent.paymentReviewedAt).toLocaleString() : "—"],
                 ["NOC File", selectedStudent.nocFileName || "Not uploaded"],
                 ["Registered", new Date(selectedStudent.createdAt).toLocaleString()],
               ].map(([label, value]) => (
@@ -220,6 +293,30 @@ export default function AdminPanel({ onLogout }) {
                  View / Download NOC
               </button>
             )}
+
+            {selectedStudent.screenshotPath && (
+              <button className={styles.screenshotBtn} onClick={() => handleViewScreenshot(selectedStudent)}>
+                View Payment Screenshot
+              </button>
+            )}
+
+            <div className={styles.modalActions}>
+              <button
+                className={styles.approveBtn}
+                disabled={actionLoading || selectedStudent.paymentStatus === "Successful"}
+                onClick={() => handlePaymentAction(selectedStudent._id, "Successful")}
+              >
+                Approve
+              </button>
+              <button
+                className={styles.rejectBtn}
+                disabled={actionLoading || selectedStudent.paymentStatus === "Rejected"}
+                onClick={() => handlePaymentAction(selectedStudent._id, "Rejected")}
+              >
+                Reject
+              </button>
+            </div>
+            {screenshotError && <div className={styles.error}>{screenshotError}</div>}
           </div>
         </div>
       )}

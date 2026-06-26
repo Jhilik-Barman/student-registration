@@ -4,7 +4,12 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const Student = require("../models/Student");
-const { sendPaymentConfirmationEmail } = require("../utils/sendEmail");
+const {
+  sendRegistrationReceivedEmail,
+  sendPaymentSuccessfulEmail,
+  sendPaymentRejectedEmail,
+} = require("../utils/sendEmail");
+const { verifyAdmin } = require("./adminRoutes");
 
 // Create uploads folder if it doesn't exist
 const uploadDir = path.join(__dirname, "../uploads");
@@ -43,9 +48,9 @@ const uploadNOC = multer({
 });
 
 // GET /api/students — Get all students (for AdminPanel)
-router.get("/", async (req, res) => {
+router.get("/", verifyAdmin, async (req, res) => {
   try {
-    const students = await Student.find().sort({ createdAt: -1 });
+    const students = await Student.find().sort({ paymentSubmittedAt: -1, createdAt: -1 });
     res.json({ success: true, data: students });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -111,7 +116,7 @@ router.post("/:id/noc", uploadNOC.single("noc"), async (req, res) => {
   }
 });
 
-// POST /api/students/:id/payment-confirm — Upload screenshot & confirm payment
+// POST /api/students/:id/payment-confirm — Upload screenshot & submit payment for review
 router.post("/:id/payment-confirm", uploadScreenshot.single("screenshot"), async (req, res) => {
   try {
     if (!req.file) {
@@ -122,12 +127,58 @@ router.post("/:id/payment-confirm", uploadScreenshot.single("screenshot"), async
       return res.status(404).json({ ok: false, message: "Student not found." });
     }
     student.screenshotPath = req.file.filename;
-    student.paymentConfirmed = true;
+    student.paymentStatus = "Pending";
+    student.paymentSubmittedAt = new Date();
+    student.paymentConfirmed = false;
+    student.paymentReviewedAt = null;
     await student.save();
-    await sendPaymentConfirmationEmail(student);
-    res.json({ ok: true, message: "Payment confirmed and confirmation email sent." });
+    await sendRegistrationReceivedEmail(student);
+    res.json({ ok: true, message: "Payment submitted and confirmation email sent.", data: student });
   } catch (err) {
     res.status(500).json({ ok: false, message: err.message });
+  }
+});
+
+// GET /api/students/:id/screenshot — View payment screenshot (admin only)
+router.get("/:id/screenshot", verifyAdmin, async (req, res) => {
+  try {
+    const student = await Student.findById(req.params.id);
+    if (!student || !student.screenshotPath) {
+      return res.status(404).json({ success: false, message: "Screenshot not found." });
+    }
+    const filePath = path.join(uploadDir, student.screenshotPath);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ success: false, message: "Screenshot file missing." });
+    }
+    res.sendFile(filePath);
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// PUT /api/students/:id/payment-status — Admin approves or rejects payment
+router.put("/:id/payment-status", verifyAdmin, async (req, res) => {
+  try {
+    const { status } = req.body;
+    if (!["Successful", "Rejected"].includes(status)) {
+      return res.status(400).json({ success: false, message: "Status must be Successful or Rejected." });
+    }
+    const student = await Student.findById(req.params.id);
+    if (!student) {
+      return res.status(404).json({ success: false, message: "Student not found." });
+    }
+    student.paymentStatus = status;
+    student.paymentReviewedAt = new Date();
+    student.paymentConfirmed = status === "Successful";
+    await student.save();
+    if (status === "Successful") {
+      await sendPaymentSuccessfulEmail(student);
+    } else {
+      await sendPaymentRejectedEmail(student);
+    }
+    res.json({ success: true, message: `Payment ${status.toLowerCase()} and email sent.`, data: student });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 

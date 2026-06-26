@@ -13,7 +13,7 @@ function generateUPIQR(upiId, name, amount, note) {
 }
 
 export default function PaymentConfirmation({ student, course, mode }) {
-  const [paid, setPaid] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [screenshot, setScreenshot] = useState(null);
@@ -38,9 +38,7 @@ export default function PaymentConfirmation({ student, course, mode }) {
 
   async function handlePaymentDone() {
     if (!screenshot) {
-      setError(
-        "Please upload your payment screenshot before submitting."
-      );
+      setError("Please upload your payment screenshot before submitting.");
       return;
     }
 
@@ -53,65 +51,52 @@ export default function PaymentConfirmation({ student, course, mode }) {
     const result = await confirmPayment(student._id, formData);
 
     if (result.ok) {
-      setPaid(true);
+      setSubmitted(true);
     } else {
-      setError(
-        result.message || "Something went wrong. Please try again."
-      );
+      setError(result.message || "Something went wrong. Please try again.");
     }
 
     setLoading(false);
   }
 
-  if (paid) {
+  if (submitted) {
     return (
       <div className={styles.card}>
         <div className={styles.successPage}>
           <div className={styles.successIcon}></div>
 
           <h1 className={styles.successTitle}>
-            Payment Confirmed!
+            Screenshot Submitted
           </h1>
 
           <p className={styles.successSubtitle}>
-            A confirmation email has been sent to{" "}
-            <strong>{student.email}</strong>
+            Your payment screenshot has been submitted for verification. A confirmation email has been sent to <strong>{student.email}</strong>.
           </p>
 
           <div className={styles.successDetails}>
             <div className={styles.row}>
               <span className={styles.rowLabel}>Name</span>
-              <span className={styles.rowValue}>
-                {student.fullName}
-              </span>
+              <span className={styles.rowValue}>{student.fullName}</span>
             </div>
 
             <div className={styles.row}>
               <span className={styles.rowLabel}>College</span>
-              <span className={styles.rowValue}>
-                {student.collegeName}
-              </span>
+              <span className={styles.rowValue}>{student.collegeName}</span>
             </div>
 
             <div className={styles.row}>
               <span className={styles.rowLabel}>Course</span>
-              <span className={styles.rowValue}>
-                {course.name}
-              </span>
+              <span className={styles.rowValue}>{course.name}</span>
             </div>
 
             <div className={styles.row}>
-              <span className={styles.rowLabel}>
-                Amount Paid
-              </span>
-              <span className={styles.rowValue}>
-                ₹{course.fee}/-
-              </span>
+              <span className={styles.rowLabel}>Amount Paid</span>
+              <span className={styles.rowValue}>₹{course.fee}/-</span>
             </div>
           </div>
 
           <p className={styles.successNote}>
-            Please check your email inbox for the confirmation details.
+            Our team will verify your payment within 24 hours and send another email once it is confirmed.
           </p>
 
           <button
@@ -300,11 +285,9 @@ export default function PaymentConfirmation({ student, course, mode }) {
       <button
         className={styles.paidBtn}
         onClick={handlePaymentDone}
-        disabled={loading}
+        disabled={loading || !screenshot}
       >
-        {loading
-          ? "Sending confirmation..."
-          : "Submit Screenshot & Get Confirmation Email"}
+        {loading ? "Submitting..." : "Done"}
       </button>
 
       <button
