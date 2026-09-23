@@ -1,8 +1,24 @@
 import { useState } from "react";
+
 import FormInput from "./FormInput";
-import { validateFullName, validateEmail, validatePhone, validateRollNumber } from "../utils/validators";
-import { registerStudent } from "../utils/api";
+
+import {
+  validateFullName,
+  validateEmail,
+  validatePhone,
+  validateRollNumber,
+} from "../utils/validators";
+
+import {
+  registerStudent,
+  getStudentByEmail,
+} from "../utils/api";
+
 import styles from "./RegistrationForm.module.css";
+
+// ======================================================
+// College List
+// ======================================================
 
 const KOLKATA_COLLEGES = [
   "Jadavpur University",
@@ -120,101 +136,434 @@ const KOLKATA_COLLEGES = [
   "Other",
 ];
 
-const initialState = { fullName: "", email: "", phone: "", collegeName: "", rollNumber: "" };
-const initialErrors = { fullName: "", email: "", phone: "", collegeName: "", rollNumber: "" };
-const initialTouched = { fullName: false, email: false, phone: false, collegeName: false, rollNumber: false };
+// ======================================================
+// Initial State
+// ======================================================
+
+const initialState = {
+  fullName: "",
+  email: "",
+  phone: "",
+  collegeName: "",
+  rollNumber: "",
+};
+
+const initialErrors = {
+  fullName: "",
+  email: "",
+  phone: "",
+  collegeName: "",
+  rollNumber: "",
+};
+
+const initialTouched = {
+  fullName: false,
+  email: false,
+  phone: false,
+  collegeName: false,
+  rollNumber: false,
+};
+
+// ======================================================
+// Registration Form Component
+// ======================================================
 
 export default function RegistrationForm({ onRegistered }) {
   const [form, setForm] = useState(initialState);
-  const [errors, setErrors] = useState(initialErrors);
-  const [touched, setTouched] = useState(initialTouched);
-  const [submitting, setSubmitting] = useState(false);
-  const [serverMessage, setServerMessage] = useState(null);
-  const [search, setSearch] = useState("");
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [showOtherInput, setShowOtherInput] = useState(false);
+
+  const [errors, setErrors] =
+    useState(initialErrors);
+
+  const [touched, setTouched] =
+    useState(initialTouched);
+
+  const [submitting, setSubmitting] =
+    useState(false);
+
+  const [checkingEmail, setCheckingEmail] =
+    useState(false);
+
+  const [serverMessage, setServerMessage] =
+    useState(null);
+
+  const [search, setSearch] =
+    useState("");
+
+  const [showDropdown, setShowDropdown] =
+    useState(false);
+
+  const [showOtherInput, setShowOtherInput] =
+    useState(false);
+
+  // ====================================================
+  // Filter Colleges
+  // ====================================================
 
   const filteredColleges = search
-    ? KOLKATA_COLLEGES.filter((c) => c.toLowerCase().includes(search.toLowerCase()))
+    ? KOLKATA_COLLEGES.filter((college) =>
+        college
+          .toLowerCase()
+          .includes(search.toLowerCase())
+      )
     : KOLKATA_COLLEGES;
 
+  // ====================================================
+  // Validation
+  // ====================================================
+
   function validate(field, value) {
-    if (field === "fullName") return validateFullName(value);
-    if (field === "email") return validateEmail(value);
-    if (field === "phone") return validatePhone(value);
-    if (field === "collegeName") return value.trim() ? "" : "Please select your college";
-    if (field === "rollNumber") return validateRollNumber(value);
+    if (field === "fullName") {
+      return validateFullName(value);
+    }
+
+    if (field === "email") {
+      return validateEmail(value);
+    }
+
+    if (field === "phone") {
+      return validatePhone(value);
+    }
+
+    if (field === "collegeName") {
+      return value.trim()
+        ? ""
+        : "Please select your college";
+    }
+
+    if (field === "rollNumber") {
+      return validateRollNumber(value);
+    }
+
     return "";
   }
 
+  // ====================================================
+  // Normal Input Change
+  // ====================================================
+
   function handleChange(e) {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
     if (touched[name]) {
-      setErrors((prev) => ({ ...prev, [name]: validate(name, value) }));
+      setErrors((prev) => ({
+        ...prev,
+        [name]: validate(name, value),
+      }));
     }
+
     setServerMessage(null);
   }
+
+  // ====================================================
+  // College Selection
+  // ====================================================
 
   function handleCollegeSelect(college) {
     if (college === "Other") {
       setShowOtherInput(true);
-      setForm((prev) => ({ ...prev, collegeName: "" }));
-      setSearch("Other - Please specify below");
+
+      setForm((prev) => ({
+        ...prev,
+        collegeName: "",
+      }));
+
+      setSearch(
+        "Other - Please specify below"
+      );
     } else {
       setShowOtherInput(false);
-      setForm((prev) => ({ ...prev, collegeName: college }));
+
+      setForm((prev) => ({
+        ...prev,
+        collegeName: college,
+      }));
+
       setSearch(college);
-      setErrors((prev) => ({ ...prev, collegeName: "" }));
+
+      setErrors((prev) => ({
+        ...prev,
+        collegeName: "",
+      }));
     }
+
     setShowDropdown(false);
-    setTouched((prev) => ({ ...prev, collegeName: true }));
+
+    setTouched((prev) => ({
+      ...prev,
+      collegeName: true,
+    }));
   }
+
+  // ====================================================
+  // Normal Blur
+  // ====================================================
 
   function handleBlur(e) {
     const { name, value } = e.target;
-    setTouched((prev) => ({ ...prev, [name]: true }));
-    setErrors((prev) => ({ ...prev, [name]: validate(name, value) }));
+
+    setTouched((prev) => ({
+      ...prev,
+      [name]: true,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: validate(name, value),
+    }));
   }
+
+  // ====================================================
+  // Email Blur
+  //
+  // When user enters an existing email,
+  // previous data will automatically load.
+  // ====================================================
+
+  async function handleEmailBlur(e) {
+    const email = e.target.value
+      .trim()
+      .toLowerCase();
+
+    // Mark email as touched
+    setTouched((prev) => ({
+      ...prev,
+      email: true,
+    }));
+
+    // Validate email
+    const emailError = validate(
+      "email",
+      email
+    );
+
+    setErrors((prev) => ({
+      ...prev,
+      email: emailError,
+    }));
+
+    // Stop if email is invalid
+    if (emailError) {
+      return;
+    }
+
+    setCheckingEmail(true);
+    setServerMessage(null);
+
+    try {
+      const result =
+        await getStudentByEmail(email);
+
+      // ==================================================
+      // Existing student found
+      // ==================================================
+
+      if (result.ok && result.data) {
+        const student = result.data;
+
+        // Fill previous data automatically
+        setForm({
+          fullName:
+            student.fullName || "",
+
+          email:
+            student.email || email,
+
+          phone:
+            student.phone || "",
+
+          collegeName:
+            student.collegeName || "",
+
+          rollNumber:
+            student.rollNumber || "",
+        });
+
+        // Set college search value
+        setSearch(
+          student.collegeName || ""
+        );
+
+        setShowOtherInput(false);
+
+        // Mark fields as touched
+        setTouched({
+          fullName: true,
+          email: true,
+          phone: true,
+          collegeName: true,
+          rollNumber: true,
+        });
+
+        // Clear validation errors
+        setErrors(initialErrors);
+
+        // Success message
+        setServerMessage({
+          type: "success",
+          text:
+            "Existing registration found. Your previous details have been filled automatically.",
+        });
+      }
+
+      // ==================================================
+      // Student not found
+      //
+      // This is NOT an error.
+      // It simply means this is a new student.
+      // ==================================================
+
+      if (!result.ok && result.status === 404) {
+        setServerMessage(null);
+      }
+    } catch (error) {
+      console.error(
+        "Email lookup error:",
+        error
+      );
+
+      // Don't block registration if lookup fails
+      setServerMessage(null);
+    } finally {
+      setCheckingEmail(false);
+    }
+  }
+
+  // ====================================================
+  // Submit Form
+  // ====================================================
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const allTouched = { fullName: true, email: true, phone: true, collegeName: true, rollNumber: true };
-    setTouched(allTouched);
-    const newErrors = {
-      fullName: validate("fullName", form.fullName),
-      email: validate("email", form.email),
-      phone: validate("phone", form.phone),
-      collegeName: validate("collegeName", form.collegeName),
-      rollNumber: validate("rollNumber", form.rollNumber),
+
+    // Mark everything touched
+    const allTouched = {
+      fullName: true,
+      email: true,
+      phone: true,
+      collegeName: true,
+      rollNumber: true,
     };
+
+    setTouched(allTouched);
+
+    // Validate everything
+    const newErrors = {
+      fullName: validate(
+        "fullName",
+        form.fullName
+      ),
+
+      email: validate(
+        "email",
+        form.email
+      ),
+
+      phone: validate(
+        "phone",
+        form.phone
+      ),
+
+      collegeName: validate(
+        "collegeName",
+        form.collegeName
+      ),
+
+      rollNumber: validate(
+        "rollNumber",
+        form.rollNumber
+      ),
+    };
+
     setErrors(newErrors);
-    if (Object.values(newErrors).some(Boolean)) return;
+
+    // Stop if validation error exists
+    if (
+      Object.values(newErrors).some(Boolean)
+    ) {
+      return;
+    }
 
     setSubmitting(true);
     setServerMessage(null);
-    const result = await registerStudent(form);
-    if (result.ok) {
-      onRegistered(result.data);
-    } else {
+
+    try {
+      const result =
+        await registerStudent(form);
+
+      // ==================================================
+      // Registration successful
+      // New OR Existing student
+      // ==================================================
+
+      if (result.ok) {
+        onRegistered(result.data);
+        return;
+      }
+
+      // ==================================================
+      // Registration failed
+      // ==================================================
+
       const msg =
-        result.errors?.map((e) => e.message).join(", ") ||
+        result.errors
+          ?.map((error) => error.message)
+          .join(", ") ||
         result.message ||
         "Something went wrong. Please try again.";
-      setServerMessage({ type: "error", text: msg });
+
+      setServerMessage({
+        type: "error",
+        text: msg,
+      });
+    } catch (error) {
+      console.error(
+        "Registration error:",
+        error
+      );
+
+      setServerMessage({
+        type: "error",
+        text:
+          "Unable to connect to the server. Please try again.",
+      });
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   }
+
+  // ====================================================
+  // UI
+  // ====================================================
 
   return (
     <div className={styles.card}>
       <div className={styles.header}>
         <div className={styles.icon}></div>
-        <h1 className={styles.title}>Student Registration</h1>
-        <p className={styles.subtitle}>Fill in the details below to register</p>
+
+        <h1 className={styles.title}>
+          Student Registration
+        </h1>
+
+        <p className={styles.subtitle}>
+          Fill in the details below to register
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit} noValidate className={styles.form}>
+      <form
+        onSubmit={handleSubmit}
+        noValidate
+        className={styles.form}
+      >
+
+        {/* ==============================================
+            Full Name
+        ============================================== */}
+
         <FormInput
           label="Full Name"
           id="fullName"
@@ -222,55 +571,123 @@ export default function RegistrationForm({ onRegistered }) {
           value={form.fullName}
           onChange={handleChange}
           onBlur={handleBlur}
-          error={touched.fullName ? errors.fullName : ""}
+          error={
+            touched.fullName
+              ? errors.fullName
+              : ""
+          }
           placeholder="e.g. Rahul Kumar Sharma"
           hint="Enter your full name as per official records"
           maxLength={100}
         />
 
-        {/* College Autocomplete */}
+        {/* ==============================================
+            College Autocomplete
+        ============================================== */}
+
         <div className={styles.group}>
-          <label className={styles.label}>College Name</label>
+          <label className={styles.label}>
+            College Name
+          </label>
+
           <div className={styles.autocomplete}>
             <input
               type="text"
-              className={`${styles.searchInput} ${touched.collegeName && errors.collegeName ? styles.hasError : ""}`}
+              className={`${styles.searchInput} ${
+                touched.collegeName &&
+                errors.collegeName
+                  ? styles.hasError
+                  : ""
+              }`}
               placeholder="Click or type to search college..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
+
                 setShowDropdown(true);
-                setForm((prev) => ({ ...prev, collegeName: "" }));
+
+                setForm((prev) => ({
+                  ...prev,
+                  collegeName: "",
+                }));
               }}
-              onFocus={() => setShowDropdown(true)}
-              onBlur={() => setTimeout(() => setShowDropdown(false), 300)}
+              onFocus={() =>
+                setShowDropdown(true)
+              }
+              onBlur={() =>
+                setTimeout(
+                  () =>
+                    setShowDropdown(false),
+                  300
+                )
+              }
               autoComplete="off"
             />
+
             {showDropdown && (
-              <ul className={styles.dropdownList}>
-                {filteredColleges.length > 0 ? (
-                  filteredColleges.map((college) => (
-                    <li
-                      key={college}
-                      className={styles.dropdownItem}
-                      onMouseDown={() => handleCollegeSelect(college)}
-                    >
-                      {college}
-                    </li>
-                  ))
+              <ul
+                className={
+                  styles.dropdownList
+                }
+              >
+                {filteredColleges.length >
+                0 ? (
+                  filteredColleges.map(
+                    (college) => (
+                      <li
+                        key={college}
+                        className={
+                          styles.dropdownItem
+                        }
+                        onMouseDown={() =>
+                          handleCollegeSelect(
+                            college
+                          )
+                        }
+                      >
+                        {college}
+                      </li>
+                    )
+                  )
                 ) : (
-                  <li className={styles.dropdownEmpty}>No college found</li>
+                  <li
+                    className={
+                      styles.dropdownEmpty
+                    }
+                  >
+                    No college found
+                  </li>
                 )}
               </ul>
             )}
           </div>
-          {touched.collegeName && errors.collegeName && (
-            <p className={styles.errorText}> {errors.collegeName}</p>
-          )}
-          {form.collegeName && !errors.collegeName && (
-            <p className={styles.selectedCollege}> {form.collegeName}</p>
-          )}
+
+          {touched.collegeName &&
+            errors.collegeName && (
+              <p
+                className={
+                  styles.errorText
+                }
+              >
+                {errors.collegeName}
+              </p>
+            )}
+
+          {form.collegeName &&
+            !errors.collegeName && (
+              <p
+                className={
+                  styles.selectedCollege
+                }
+              >
+                {form.collegeName}
+              </p>
+            )}
         </div>
+
+        {/* ==============================================
+            Other College
+        ============================================== */}
 
         {showOtherInput && (
           <FormInput
@@ -280,11 +697,19 @@ export default function RegistrationForm({ onRegistered }) {
             value={form.collegeName}
             onChange={handleChange}
             onBlur={handleBlur}
-            error={touched.collegeName ? errors.collegeName : ""}
+            error={
+              touched.collegeName
+                ? errors.collegeName
+                : ""
+            }
             placeholder="Type your college name"
             maxLength={150}
           />
         )}
+
+        {/* ==============================================
+            Roll Number
+        ============================================== */}
 
         <FormInput
           label="Roll Number"
@@ -293,20 +718,52 @@ export default function RegistrationForm({ onRegistered }) {
           value={form.rollNumber}
           onChange={handleChange}
           onBlur={handleBlur}
-          error={touched.rollNumber ? errors.rollNumber : ""}
+          error={
+            touched.rollNumber
+              ? errors.rollNumber
+              : ""
+          }
           placeholder="e.g. 10100222001"
           maxLength={20}
         />
+
+        {/* ==============================================
+            Email
+        ============================================== */}
+
         <FormInput
           label="Email Address"
           id="email"
           type="email"
           value={form.email}
           onChange={handleChange}
-          onBlur={handleBlur}
-          error={touched.email ? errors.email : ""}
+          onBlur={handleEmailBlur}
+          error={
+            touched.email
+              ? errors.email
+              : ""
+          }
           placeholder="yourname@email.com"
         />
+
+        {/* Email Checking Message */}
+
+        {checkingEmail && (
+          <p
+            style={{
+              marginTop: "-10px",
+              marginBottom: "10px",
+              fontSize: "14px",
+            }}
+          >
+            Checking previous registration...
+          </p>
+        )}
+
+        {/* ==============================================
+            Mobile Number
+        ============================================== */}
+
         <FormInput
           label="Mobile Number"
           id="phone"
@@ -314,20 +771,56 @@ export default function RegistrationForm({ onRegistered }) {
           value={form.phone}
           onChange={handleChange}
           onBlur={handleBlur}
-          error={touched.phone ? errors.phone : ""}
+          error={
+            touched.phone
+              ? errors.phone
+              : ""
+          }
           placeholder="e.g. 9876543210"
           hint="10-digit Indian mobile number"
           maxLength={10}
         />
 
+        {/* ==============================================
+            Server Message
+        ============================================== */}
+
         {serverMessage && (
-          <div className={styles.errorMsg} role="alert">
-            ❌ {serverMessage.text}
+          <div
+            className={styles.errorMsg}
+            role="alert"
+            style={{
+              color:
+                serverMessage.type ===
+                "success"
+                  ? "green"
+                  : "red",
+            }}
+          >
+            {serverMessage.type ===
+            "success"
+              ? "✓ "
+              : "❌ "}
+
+            {serverMessage.text}
           </div>
         )}
 
-        <button type="submit" className={styles.submitBtn} disabled={submitting}>
-          {submitting ? "Registering..." : "Next: Select Course →"}
+        {/* ==============================================
+            Submit
+        ============================================== */}
+
+        <button
+          type="submit"
+          className={styles.submitBtn}
+          disabled={
+            submitting ||
+            checkingEmail
+          }
+        >
+          {submitting
+            ? "Registering..."
+            : "Next: Select Course →"}
         </button>
       </form>
     </div>
