@@ -280,6 +280,51 @@ router.put("/:id/course", async (req, res) => {
 });
 
 // ======================================================
+// PUT /api/students/:id/mode
+// Save internship mode
+// ======================================================
+
+router.put("/:id/mode", async (req, res) => {
+  try {
+    const { mode } = req.body;
+
+    if (!["online", "offline"].includes(mode)) {
+      return res.status(400).json({
+        ok: false,
+        message: "Mode must be online or offline.",
+      });
+    }
+
+    const student = await Student.findByIdAndUpdate(
+      req.params.id,
+      { mode },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!student) {
+      return res.status(404).json({
+        ok: false,
+        message: "Student not found.",
+      });
+    }
+
+    res.json({
+      ok: true,
+      student,
+      message: "Internship mode saved successfully.",
+    });
+  } catch (err) {
+    res.status(500).json({
+      ok: false,
+      message: err.message,
+    });
+  }
+});
+
+// ======================================================
 // POST /api/students/:id/noc
 // Upload NOC PDF
 // ======================================================
