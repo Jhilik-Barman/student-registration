@@ -1,12 +1,13 @@
 import { useState } from "react";
+import BackButton from "../components/BackButton";
 import { ALL_STREAMS, getCoursesForStream, getGroupLabel } from "../utils/courseData";
 import { validateStream, validateCourse } from "../utils/validators";
 import { selectCourse } from "../utils/api";
 import styles from "./CourseSelection.module.css";
 
-export default function CourseSelection({ student, onComplete }) {
-  const [stream, setStream] = useState("");
-  const [selectedCourse, setSelectedCourse] = useState(null);
+export default function CourseSelection({ student, onComplete, onBack }) {
+  const [stream, setStream] = useState(student.stream || "");
+  const [selectedCourse, setSelectedCourse] = useState(student.course || null);
   const [errors, setErrors] = useState({ stream: "", course: "" });
   const [submitting, setSubmitting] = useState(false);
   const [serverMessage, setServerMessage] = useState(null);
@@ -52,6 +53,7 @@ export default function CourseSelection({ student, onComplete }) {
 
   return (
     <div className={styles.card}>
+      <BackButton onClick={onBack} />
       <div className={styles.header}>
         <div className={styles.icon}>📚</div>
         <h1 className={styles.title}>Select Your Internship Topic</h1>

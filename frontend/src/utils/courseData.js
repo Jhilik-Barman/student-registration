@@ -5,7 +5,7 @@ export const MECH_CIVIL_STREAMS = ["Mechanical", "Civil Engineering"];
 
 export const ALL_STREAMS = [
   "CSE", "ECE", "Mechanical", "EE", "Chemical Engineering",
-  "Civil Engineering", "IT", "AEIE", "Data Science", "CSBS",
+  "Civil Engineering", "IT", "AEIE", "Data Science", "CSBS", "MBA",
 ];
 
 export const COURSES = {
@@ -39,12 +39,16 @@ export const COURSES = {
     { id: "creo", name: "CREO Parametrics", fee: 826, base: 700, gst: 18 },
     { id: "advanced_office", name: "Advanced Office Management with AI", fee: 1180, base: 1000, gst: 18 },
   ],
+  MBA: [
+    { id: "soft_skill_aptitude", name: "Soft Skill and Aptitude", fee: 3540, base: 3000, gst: 18 },
+  ],
 };
 
 export function getCourseGroup(stream) {
   if (CSE_IT_STREAMS.includes(stream)) return "CSE_IT";
   if (NON_CSE_STREAMS.includes(stream)) return "NON_CSE";
   if (MECH_CIVIL_STREAMS.includes(stream)) return "MECH_CIVIL";
+  if (stream === "MBA") return "MBA";
   return null;
 }
 
@@ -58,5 +62,6 @@ export function getGroupLabel(stream) {
   if (CSE_IT_STREAMS.includes(stream)) return "CSE / IT / Data Science";
   if (NON_CSE_STREAMS.includes(stream)) return "Non-CSE";
   if (MECH_CIVIL_STREAMS.includes(stream)) return "Mechanical / Civil Engineering";
+  if (stream === "MBA") return "MBA";
   return "";
 }

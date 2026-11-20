@@ -70,7 +70,7 @@ export default function PaymentConfirmation({ student, course, mode }) {
           </h1>
 
           <p className={styles.successSubtitle}>
-            Your payment screenshot has been submitted for verification. A confirmation email has been sent to <strong>{student.email}</strong>.
+            Please keep an eye on your email inbox. We will verify your registration and notify you once it is confirmed.
           </p>
 
           <div className={styles.successDetails}>
@@ -99,12 +99,6 @@ export default function PaymentConfirmation({ student, course, mode }) {
             Our team will verify your payment within 24 hours and send another email once it is confirmed.
           </p>
 
-          <button
-            className={styles.restartBtn}
-            onClick={() => window.location.reload()}
-          >
-            Go Back to Start
-          </button>
         </div>
       </div>
     );
@@ -290,12 +284,6 @@ export default function PaymentConfirmation({ student, course, mode }) {
         {loading ? "Submitting..." : "Done"}
       </button>
 
-      <button
-        className={styles.restartBtn}
-        onClick={() => window.location.reload()}
-      >
-        Go Back to Start
-      </button>
     </div>
   );
 }

@@ -65,6 +65,9 @@ export default function App() {
         onStudentClick={() => {
           setPage("student");
           setStep("register");
+          setStudent(null);
+          setSelectedCourse(null);
+          setSelectedMode(null);
         }}
         onAdminClick={() => setPage("adminLogin")}
       />
@@ -96,16 +99,25 @@ export default function App() {
   return (
     <div className="pageContainer">
       {step === "register" && (
-        <RegistrationForm onRegistered={handleRegistered} />
+        <RegistrationForm
+          student={student}
+          onRegistered={handleRegistered}
+          onBack={() => setPage("landing")}
+        />
       )}
       {step === "course" && student && (
-        <CourseSelection student={student} onComplete={handleCourseComplete} />
+        <CourseSelection
+          student={student}
+          onComplete={handleCourseComplete}
+          onBack={() => setStep("register")}
+        />
       )}
       {step === "mode" && student && selectedCourse && (
         <ModeSelection
           student={student}
           course={selectedCourse}
           onComplete={handleModeComplete}
+          onBack={() => setStep("course")}
         />
       )}
       {step === "payment" && student && selectedCourse && (

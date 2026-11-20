@@ -1,7 +1,8 @@
 import { useState } from "react";
+import BackButton from "../components/BackButton";
 import styles from "./ModeSelection.module.css";
 
-export default function ModeSelection({ student, course, onComplete }) {
+export default function ModeSelection({ student, course, onComplete, onBack }) {
   const [mode, setMode] = useState("");
   const [nocFile, setNocFile] = useState(null);
   const [nocError, setNocError] = useState("");
@@ -80,6 +81,7 @@ export default function ModeSelection({ student, course, onComplete }) {
 
   return (
     <div className={styles.card}>
+      <BackButton onClick={onBack} />
       <div className={styles.header}>
         <div className={styles.icon}>🏫</div>
         <h1 className={styles.title}>Select Internship Mode</h1>

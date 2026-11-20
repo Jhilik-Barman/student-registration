@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import FormInput from "./FormInput";
+import BackButton from "./BackButton";
 
 import {
   validateFullName,
@@ -26,6 +27,7 @@ const KOLKATA_COLLEGES = [
   "Kalyani Government Engineering College",
   "Jalpaiguri Government Engineering College",
   "Cooch Behar Government Engineering College",
+  "MCKV Institute of Engineering (MCKVIE)",
   "Bankura Unnayani Institute of Engineering",
   "Midnapore College of Engineering and Technology",
   "Government College of Engineering and Leather Technology (GCELT)",
@@ -168,8 +170,14 @@ const initialTouched = {
 // Registration Form Component
 // ======================================================
 
-export default function RegistrationForm({ onRegistered }) {
-  const [form, setForm] = useState(initialState);
+export default function RegistrationForm({ onRegistered, onBack, student }) {
+  const [form, setForm] = useState(() => student ? {
+    fullName: student.fullName || "",
+    email: student.email || "",
+    phone: student.phone || "",
+    collegeName: student.collegeName || "",
+    rollNumber: student.rollNumber || "",
+  } : initialState);
 
   const [errors, setErrors] =
     useState(initialErrors);
@@ -187,7 +195,7 @@ export default function RegistrationForm({ onRegistered }) {
     useState(null);
 
   const [search, setSearch] =
-    useState("");
+    useState(student?.collegeName || "");
 
   const [showDropdown, setShowDropdown] =
     useState(false);
@@ -542,6 +550,7 @@ export default function RegistrationForm({ onRegistered }) {
 
   return (
     <div className={styles.card}>
+      <BackButton onClick={onBack} />
       <div className={styles.header}>
         <div className={styles.icon}></div>
 
