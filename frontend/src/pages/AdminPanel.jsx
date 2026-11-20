@@ -50,7 +50,15 @@ export default function AdminPanel({ onLogout }) {
   async function handleViewScreenshot(studentId) {
     const token = localStorage.getItem("adminToken");
     if (!token) {
+      setScreenshotError("Admin authentication required.");
       onLogout();
+      return;
+    }
+
+    setScreenshotError(null);
+    const screenshotWindow = window.open("", "_blank");
+    if (!screenshotWindow) {
+      setScreenshotError("Please allow pop-ups to view the payment screenshot.");
       return;
     }
 
@@ -59,14 +67,16 @@ export default function AdminPanel({ onLogout }) {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
+        screenshotWindow.close();
         setScreenshotError("Unable to load screenshot. Please refresh and try again.");
         if (response.status === 401) onLogout();
         return;
       }
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
-      window.open(url, "_blank");
+      screenshotWindow.location.href = url;
     } catch (err) {
+      screenshotWindow.close();
       setScreenshotError("Unable to load screenshot. Please try again.");
     }
   }
@@ -194,6 +204,7 @@ export default function AdminPanel({ onLogout }) {
       {/* Content */}
       {loading && <div className={styles.loading}>Loading students...</div>}
       {error && <div className={styles.error}>{error}</div>}
+      {screenshotError && <div className={styles.error} role="alert">{screenshotError}</div>}
 
       {!loading && !error && filtered.length === 0 && (
         <div className={styles.empty}>No students found.</div>
@@ -244,7 +255,7 @@ export default function AdminPanel({ onLogout }) {
                   </td>
                   <td className={styles.actionCell}>
                     {s.screenshotPath ? (
-                      <button className={styles.screenshotBtn} onClick={() => handleViewScreenshot(s)}>
+                      <button className={styles.screenshotBtn} onClick={() => handleViewScreenshot(s._id)}>
                         View Screenshot
                       </button>
                     ) : "—"}
@@ -295,7 +306,7 @@ export default function AdminPanel({ onLogout }) {
             )}
 
             {selectedStudent.screenshotPath && (
-              <button className={styles.screenshotBtn} onClick={() => handleViewScreenshot(selectedStudent)}>
+              <button className={styles.screenshotBtn} onClick={() => handleViewScreenshot(selectedStudent._id)}>
                 View Payment Screenshot
               </button>
             )}

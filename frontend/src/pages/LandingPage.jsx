@@ -1,5 +1,5 @@
 import styles from "./LandingPage.module.css";
-import logo from "../../public//logog.png";
+import logo from "../../public/corporates-guide-logo.jpg";
 
 export default function LandingPage({ onStudentClick, onAdminClick }) {
   return (
@@ -8,7 +8,7 @@ export default function LandingPage({ onStudentClick, onAdminClick }) {
 
       <div className={styles.header}>
         <div className={styles.logo}>
-          <img src={logo} alt="Logo" />
+          <img src={logo} alt="Corporates Guide" />
         </div>
         
        

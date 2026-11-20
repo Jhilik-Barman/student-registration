@@ -38,8 +38,14 @@
 }
 
 .logo {
-  font-size: 1.8rem;
   margin-bottom: 6px;
+}
+
+.logo img {
+  display: block;
+  width: min(420px, 85vw);
+  height: auto;
+  margin: 0 auto;
 }
 
 .headerTitle {
@@ -208,8 +214,6 @@
 
   .header { margin-bottom: 1rem; }
   .headerTitle { font-size: 1.5rem; }
-  .logo { font-size: 1.4rem; }
-
   .cards {
     flex-direction: column;
     gap: 12px;
