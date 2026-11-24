@@ -1,6 +1,7 @@
 import { useState } from "react";
 import BackButton from "../components/BackButton";
 import { EXECUTIVE_INSTITUTE_COLLEGE } from "../utils/courseData";
+import { saveStudentMode } from "../utils/api";
 import styles from "./ModeSelection.module.css";
 
 export default function ModeSelection({ student, course, onComplete, onBack }) {
@@ -53,13 +54,12 @@ export default function ModeSelection({ student, course, onComplete, onBack }) {
 
     setUploading(true);
 
-    // If online, upload NOC to backend
-    if (mode === "online" && !onlineOnly) {
-      const formData = new FormData();
-      formData.append("noc", nocFile);
-      formData.append("studentId", student._id);
+    try {
+      if (mode === "online" && !onlineOnly) {
+        const formData = new FormData();
+        formData.append("noc", nocFile);
+        formData.append("studentId", student._id);
 
-      try {
         const response = await fetch(`/api/students/${student._id}/noc`, {
           method: "POST",
           body: formData,
@@ -67,18 +67,22 @@ export default function ModeSelection({ student, course, onComplete, onBack }) {
         const result = await response.json();
         if (!response.ok) {
           setNocError(result.message || "Failed to upload NOC. Please try again.");
-          setUploading(false);
           return;
         }
-      } catch (error) {
-        setNocError("Upload failed. Please try again.");
-        setUploading(false);
+      }
+
+      const result = await saveStudentMode(student._id, mode);
+      if (!result.ok) {
+        setModeError(result.message || "Failed to save your mode. Please try again.");
         return;
       }
-    }
 
-    setUploading(false);
-    onComplete(mode);
+      onComplete(mode);
+    } catch (error) {
+      setModeError("Unable to save your mode. Please try again.");
+    } finally {
+      setUploading(false);
+    }
   }
 
   return (
@@ -162,7 +166,7 @@ export default function ModeSelection({ student, course, onComplete, onBack }) {
         )}
 
         <button type="submit" className={styles.submitBtn} disabled={uploading}>
-          {uploading ? "Uploading..." : "Continue to Payment →"}
+          {uploading ? "Saving..." : "Continue to Payment →"}
         </button>
       </form>
     </div>

@@ -113,10 +113,11 @@ export default function AdminPanel({ onLogout }) {
 
   // ── filtered আগে define করা হচ্ছে ──
   const filtered = students.filter((s) => {
+    const studentMode = typeof s.mode === "string" ? s.mode.trim().toLowerCase() : "";
     const matchesFilter =
       filter === "all" ||
-      (filter === "online" && s.mode === "online") ||
-      (filter === "offline" && s.mode === "offline");
+      (filter === "online" && studentMode === "online") ||
+      (filter === "offline" && studentMode === "offline");
 
     const matchesSearch =
       s.fullName.toLowerCase().includes(search.toLowerCase()) ||

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Student Registration System
 
 React + Vite frontend with Node.js/Express backend and MongoDB database.
@@ -62,6 +61,3 @@ npm run dev
 | Backend | Node.js, Express |
 | Database | MongoDB, Mongoose |
 | Validation | express-validator (backend), custom (frontend) |
-=======
-# student-registration
->>>>>>> be1dd1afb9f165276c09bdc4cb13c6dc4b7b2dda

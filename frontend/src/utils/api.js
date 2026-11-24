@@ -72,6 +72,31 @@ export async function selectCourse(studentId, courseData) {
 }
 
 // ======================================================
+// Save Internship Mode
+// ======================================================
+
+export async function saveStudentMode(studentId, mode) {
+  const response = await fetch(
+    `${API_BASE}/students/${studentId}/mode`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ mode }),
+    }
+  );
+
+  const result = await response.json();
+
+  return {
+    ok: response.ok,
+    status: response.status,
+    ...result,
+  };
+}
+
+// ======================================================
 // Confirm Payment
 // ======================================================
 
