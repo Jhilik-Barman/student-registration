@@ -25,6 +25,7 @@ const KOLKATA_COLLEGES = [
   "Jadavpur University",
   "Bengal Engineering and Science University (IIEST Shibpur)",
   "Kalyani Government Engineering College",
+  "Engineering Institute For Junior Executives, Howrah",
   "Jalpaiguri Government Engineering College",
   "Cooch Behar Government Engineering College",
   "MCKV Institute of Engineering (MCKVIE)",

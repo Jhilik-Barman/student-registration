@@ -185,8 +185,9 @@ export default function PaymentConfirmation({ student, course, mode }) {
           </span>
 
           <span className={styles.rowValue}>
-            ₹{course.fee}/- ({course.base}+{course.gst}%
-            GST)
+            {course.gst > 0
+              ? `₹${course.fee}/- (${course.base}+${course.gst}% GST)`
+              : `₹${course.fee}/-`}
           </span>
         </div>
       </div>

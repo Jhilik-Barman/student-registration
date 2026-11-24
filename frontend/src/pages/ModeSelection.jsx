@@ -1,9 +1,11 @@
 import { useState } from "react";
 import BackButton from "../components/BackButton";
+import { EXECUTIVE_INSTITUTE_COLLEGE } from "../utils/courseData";
 import styles from "./ModeSelection.module.css";
 
 export default function ModeSelection({ student, course, onComplete, onBack }) {
-  const [mode, setMode] = useState("");
+  const onlineOnly = student.collegeName === EXECUTIVE_INSTITUTE_COLLEGE;
+  const [mode, setMode] = useState(onlineOnly ? "online" : "");
   const [nocFile, setNocFile] = useState(null);
   const [nocError, setNocError] = useState("");
   const [modeError, setModeError] = useState("");
@@ -44,7 +46,7 @@ export default function ModeSelection({ student, course, onComplete, onBack }) {
       return;
     }
 
-    if (mode === "online" && !nocFile) {
+    if (mode === "online" && !onlineOnly && !nocFile) {
       setNocError("Please upload your NOC in PDF format");
       return;
     }
@@ -52,7 +54,7 @@ export default function ModeSelection({ student, course, onComplete, onBack }) {
     setUploading(true);
 
     // If online, upload NOC to backend
-    if (mode === "online") {
+    if (mode === "online" && !onlineOnly) {
       const formData = new FormData();
       formData.append("noc", nocFile);
       formData.append("studentId", student._id);
@@ -108,22 +110,24 @@ export default function ModeSelection({ student, course, onComplete, onBack }) {
               <div className={`${styles.radio} ${mode === "online" ? styles.radioSelected : ""}`} />
             </div>
 
-            <div
-              className={`${styles.modeCard} ${mode === "offline" ? styles.selected : ""}`}
-              onClick={() => handleModeSelect("offline")}
-            >
-              <div className={styles.modeIcon}>🏢</div>
-              <div className={styles.modeInfo}>
-                <span className={styles.modeName}>Offline</span>
-                <span className={styles.modeDesc}>In-person, visit office regularly</span>
+            {!onlineOnly && (
+              <div
+                className={`${styles.modeCard} ${mode === "offline" ? styles.selected : ""}`}
+                onClick={() => handleModeSelect("offline")}
+              >
+                <div className={styles.modeIcon}>🏢</div>
+                <div className={styles.modeInfo}>
+                  <span className={styles.modeName}>Offline</span>
+                  <span className={styles.modeDesc}>In-person, visit office regularly</span>
+                </div>
+                <div className={`${styles.radio} ${mode === "offline" ? styles.radioSelected : ""}`} />
               </div>
-              <div className={`${styles.radio} ${mode === "offline" ? styles.radioSelected : ""}`} />
-            </div>
+            )}
           </div>
         </div>
 
         {/* NOC Upload — only for Online */}
-        {mode === "online" && (
+        {mode === "online" && !onlineOnly && (
           <div className={styles.group}>
             <label className={styles.label}>Upload NOC (No Objection Certificate)</label>
             <p className={styles.hint}>

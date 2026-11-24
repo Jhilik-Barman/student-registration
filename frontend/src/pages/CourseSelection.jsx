@@ -1,6 +1,13 @@
 import { useState } from "react";
 import BackButton from "../components/BackButton";
-import { ALL_STREAMS, getCoursesForStream, getGroupLabel } from "../utils/courseData";
+import {
+  ALL_STREAMS,
+  EXECUTIVE_INSTITUTE_COLLEGE,
+  EXECUTIVE_INSTITUTE_COURSE,
+  EXECUTIVE_INSTITUTE_STREAMS,
+  getCoursesForStream,
+  getGroupLabel,
+} from "../utils/courseData";
 import { validateStream, validateCourse } from "../utils/validators";
 import { selectCourse } from "../utils/api";
 import styles from "./CourseSelection.module.css";
@@ -12,8 +19,12 @@ export default function CourseSelection({ student, onComplete, onBack }) {
   const [submitting, setSubmitting] = useState(false);
   const [serverMessage, setServerMessage] = useState(null);
 
-  const courses = getCoursesForStream(stream);
-  const groupLabel = getGroupLabel(stream);
+  const executiveInstitute = student.collegeName === EXECUTIVE_INSTITUTE_COLLEGE;
+  const streams = executiveInstitute ? EXECUTIVE_INSTITUTE_STREAMS : ALL_STREAMS;
+  const courses = executiveInstitute
+    ? (EXECUTIVE_INSTITUTE_STREAMS.includes(stream) ? [EXECUTIVE_INSTITUTE_COURSE] : [])
+    : getCoursesForStream(stream);
+  const groupLabel = executiveInstitute ? "Engineering" : getGroupLabel(stream);
 
   function handleStreamChange(e) {
     setStream(e.target.value);
@@ -72,7 +83,7 @@ export default function CourseSelection({ student, onComplete, onBack }) {
             onChange={handleStreamChange}
           >
             <option value="">-- Select your stream --</option>
-            {ALL_STREAMS.map((s) => (
+            {streams.map((s) => (
               <option key={s} value={s}>{s}</option>
             ))}
           </select>
@@ -96,7 +107,9 @@ export default function CourseSelection({ student, onComplete, onBack }) {
                     <span className={styles.courseName}>{course.name}</span>
                     <span className={styles.courseFee}>
                       ₹{course.fee}/-
-                      <span className={styles.feeBreakup}> ({course.base}+{course.gst}% GST)</span>
+                      {course.gst > 0 && (
+                        <span className={styles.feeBreakup}> ({course.base}+{course.gst}% GST)</span>
+                      )}
                     </span>
                   </div>
                   <div className={`${styles.radio} ${selectedCourse?.id === course.id ? styles.radioSelected : ""}`} />
@@ -112,14 +125,18 @@ export default function CourseSelection({ student, onComplete, onBack }) {
               <span>Course</span>
               <span>{selectedCourse.name}</span>
             </div>
-            <div className={styles.feeRow}>
-              <span>Base Fee</span>
-              <span>₹{selectedCourse.base}/-</span>
-            </div>
-            <div className={styles.feeRow}>
-              <span>GST ({selectedCourse.gst}%)</span>
-              <span>₹{selectedCourse.fee - selectedCourse.base}/-</span>
-            </div>
+            {selectedCourse.gst > 0 && (
+              <>
+                <div className={styles.feeRow}>
+                  <span>Base Fee</span>
+                  <span>₹{selectedCourse.base}/-</span>
+                </div>
+                <div className={styles.feeRow}>
+                  <span>GST ({selectedCourse.gst}%)</span>
+                  <span>₹{selectedCourse.fee - selectedCourse.base}/-</span>
+                </div>
+              </>
+            )}
             <div className={`${styles.feeRow} ${styles.feeTotal}`}>
               <span>Total Fee</span>
               <span>₹{selectedCourse.fee}/-</span>

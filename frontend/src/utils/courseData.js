@@ -3,6 +3,22 @@ export const CSE_IT_STREAMS = ["CSE", "IT", "Data Science", "CSBS"];
 export const NON_CSE_STREAMS = ["ECE", "EE", "Chemical Engineering", "AEIE"];
 export const MECH_CIVIL_STREAMS = ["Mechanical", "Civil Engineering"];
 
+export const EXECUTIVE_INSTITUTE_COLLEGE =
+  "Engineering Institute For Junior Executives, Howrah";
+export const EXECUTIVE_INSTITUTE_STREAMS = [
+  "Metallurgical Engineering",
+  "Mechanical Engineering",
+  "Electrical Engineering",
+  "Electronics and Telecommunication Engineering",
+];
+export const EXECUTIVE_INSTITUTE_COURSE = {
+  id: "autocad",
+  name: "AUTOCAD",
+  fee: 400,
+  base: 400,
+  gst: 0,
+};
+
 export const ALL_STREAMS = [
   "CSE", "ECE", "Mechanical", "EE", "Chemical Engineering",
   "Civil Engineering", "IT", "AEIE", "Data Science", "CSBS", "MBA",
